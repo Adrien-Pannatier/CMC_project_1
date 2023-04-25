@@ -25,11 +25,32 @@ def network_ode(_time, state, robot_parameters, loads, contact_sens):
         Returns derivative of state (phases and amplitudes)
 
     """
-    n_oscillators = robot_parameters.n_oscillators
+    n_oscillators = robot_parameters.n_oscillators # 20
+    n_oscillators_legs = robot_parameters.n_oscillators_legs # 4
+    n_body_joints = robot_parameters.n_body_joints # 8
+    coupling_weights = robot_parameters.coupling_weights
+    phase_bias = robot_parameters.phase_bias
     phases = state[:n_oscillators]
     amplitudes = state[n_oscillators:2*n_oscillators]
+    der_phases = np.zeros_like(phases)
+    der_amplitudes = np.zeros_like(amplitudes)
+    # CONV_FAC = 20 
     # Implement equation here
-    return np.concatenate([np.zeros_like(phases), np.zeros_like(amplitudes)])
+    # robot_parameters.update(parameters) a = 20
+    # BETTER TO USE FOR LOOP FOR EACH CASE IMO
+    ##########################################
+
+    # array with [freq, coupling_weight, phase_bias, rates, nominal_amp] 
+    robot_param = robot_parameters.get_parameters() 
+
+    for i in range(n_oscillators): # includes body (1->16) and limbs (17->20)
+        for j in range(n_oscillators): # includes body (1->16) and limbs (17->20)
+            if i == j:
+                continue
+            sum_phase = np.sum(amplitudes[j]*robot_param[1][i][j]*np.sin(phases[i] - phases[j]-robot_param[2][i][j]))
+        der_phases[i] = 2*np.pi*robot_param[0][i] + sum_phase 
+        der_amplitudes[i] = robot_param[3][i]*(robot_param[4][i]-amplitudes[i])
+    return np.concatenate([der_phases, der_amplitudes])
 
 
 def motor_output(phases, amplitudes, iteration):
