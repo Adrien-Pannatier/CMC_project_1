@@ -1,0 +1,8 @@
+#ignore everything
+/*
+
+#but py files and gitignore
+!.gitignore
+!/Python
+/Python/*
+!/Python/*.py
