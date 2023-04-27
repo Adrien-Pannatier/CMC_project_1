@@ -5,7 +5,7 @@ from scipy.integrate import ode
 from robot_parameters import RobotParameters
 
 
-def network_ode(_time, state, robot_parameters, loads, contact_sens):
+def network_ode(time, state, robot_parameters, loads, contact_sens):
     """Network_ODE
 
     Parameters
@@ -47,7 +47,7 @@ def network_ode(_time, state, robot_parameters, loads, contact_sens):
         for j in range(n_oscillators): # includes body (1->16) and limbs (17->20)
             if i == j:
                 continue
-            sum_phase = np.sum(amplitudes[j]*robot_param[1][i][j]*np.sin(phases[i] - phases[j]-robot_param[2][i][j]))
+            sum_phase = np.sum(amplitudes[j]*robot_param[1][i][j]*np.sin(phases[j] - phases[i] - robot_param[2][i][j]))
         der_phases[i] = 2*np.pi*robot_param[0][i] + sum_phase 
         der_amplitudes[i] = robot_param[3][i]*(robot_param[4][i]-amplitudes[i])
     return np.concatenate([der_phases, der_amplitudes])
@@ -77,22 +77,28 @@ def motor_output(phases, amplitudes, iteration):
     # output -> spine output for motor (head to tail) + leg output (Front Left
     # shoulder, Front Left wrist, Front Right, Hind Left, Hind right)
     
-    #phases = np.append(
+    # phases = np.append(
     #    np.zeros_like(phases)[
     #        :16], np.zeros_like(phases)[
     #        16:20])
-    #amplitudes = np.append(
+    # amplitudes = np.append(
     #    np.zeros_like(amplitudes)[
     #        :16], np.zeros_like(amplitudes)[
     #        16:20])
     
     motor_outputs = np.zeros_like(amplitudes)[:16]
-
+    show = np.zeros_like(amplitudes)[:16]
+    
     # body output for joints 
     for i in range(8):
-        motor_outputs[i] = amplitudes[i]*(1 + np.cos(phases[i]) - amplitudes[i+8]*(1 + np.cos(phases[i+8])))
-
+        motor_outputs[i] = amplitudes[i]*(1 + np.cos(phases[i])) - amplitudes[i+8]*(1 + np.cos(phases[i+8]))
+        print("----------------------------------------")
+        print(i)
+        print(amplitudes[i])
+        print(amplitudes[i+8])
+        
     # body out put for shoulder and wrist joints
+
     for i in range(4):
         # shoulder joints
         motor_outputs[8+2*i] = amplitudes[16+i]*np.cos(phases[16+i])
@@ -144,4 +150,3 @@ class SalamandraNetwork:
             iteration=iteration,
         )
         return oscillator_output
-

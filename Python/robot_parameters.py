@@ -73,12 +73,13 @@ class RobotParameters(dict):
         return self.freqs, self.coupling_weights, self.phase_bias, self.rates, self.nominal_amplitudes
     
     def set_frequencies(self, parameters):
-        # need two set of frequencies : for the body and for the limb
+        # need two sets of frequencies : for the body and for the limb
         if (parameters.ldlow <= parameters.drive <= parameters.ldhigh):
             freq_limb = parameters.lcv1 * parameters.drive + parameters.lcv0
             self.freqs[16:20] = freq_limb
         else:
             self.freqs[16:20] = parameters.lvsat
+            
         if (parameters.bdlow <= parameters.drive <= parameters.bdhigh):
             freq_body = parameters.bcv1 * parameters.drive + parameters.bcv0
             self.freqs[:16] = freq_body
@@ -86,46 +87,46 @@ class RobotParameters(dict):
             self.freqs[:16] = parameters.bvsat
 
     def set_coupling_weights_and_phase_bias(self, parameters):
-        # upwards and downwards in body CPG
-        for i in range(self.n_oscillators - self.n_oscillators_legs):
-            for j in range(self.n_oscillators - self.n_oscillators_legs):
+        # upwards, downwards and contralateral in body CPG
+        for i in range(self.n_oscillators - self.n_oscillators_legs): # range(16)
+            for j in range(self.n_oscillators - self.n_oscillators_legs): # range(16)
                 if (i==j):
                     continue
-                elif (((i-j)==1) & ((i+j)!=2*self.n_body_joints+1)): # downwards, breaks if case i=8 and j=9
-                    self.coupling_weights[i][j] = parameters.downward_body_CPG_w
-                    self.phase_bias[i][j] = parameters.downward_body_CPG_phi
-                elif ((i-j)==-1 & (i+j)!=17): # upwards
-                    self.coupling_weights[i][j] = parameters.upward_body_CPG_w
-                    self.phase_bias[i][j] = parameters.upward_body_CPG_phi
-                elif (i==j+self.n_body_joints) | (j==i+self.n_body_joints): #contralateral
-                    self.coupling_weights[i][j] = parameters.contralateral_body_CPG_w
-                    self.phase_bias[i][j] = parameters.contralateral_body_CPG_phi
+                elif (((i-j)==1) and ((i+j)!=2*self.n_body_joints-1)): # downwards, breaks if case i=8 and j=9
+                    self.coupling_weights[i, j] = parameters.downward_body_CPG_w
+                    self.phase_bias[i, j] = parameters.downward_body_CPG_phi
+                elif ((i-j)==-1 and (i+j)!=2*self.n_body_joints-1): # upwards
+                    self.coupling_weights[i, j] = parameters.upward_body_CPG_w
+                    self.phase_bias[i, j] = parameters.upward_body_CPG_phi
+                elif ((i==j+self.n_body_joints) or (j==i+self.n_body_joints)): #contralateral
+                    self.coupling_weights[i, j] = parameters.contralateral_body_CPG_w
+                    self.phase_bias[i, j] = parameters.contralateral_body_CPG_phi
 
         # from limb to body CPG
         for i in range(self.n_oscillators):
             for j in range(self.n_oscillators):
                 if (i==j):
                     continue
-                if ((j==16)&(i<4)):
-                    self.coupling_weights[i][j] = parameters.limb_to_body_CPG_w
-                    self.phase_bias[i][j] = parameters.limb_to_body_CPG_phi
-                elif ((j==17)&(4<=i<=7)):
-                    self.coupling_weights[i][j] = parameters.limb_to_body_CPG_w
-                    self.phase_bias[i][j] = parameters.limb_to_body_CPG_phi
-                elif ((j==18)&(8<=i<=11)):
-                    self.coupling_weights[i][j] = parameters.limb_to_body_CPG_w
-                    self.phase_bias[i][j] = parameters.limb_to_body_CPG_phi
-                elif ((j==19)&(12<=i<=15)):
-                    self.coupling_weights[i][j] = parameters.limb_to_body_CPG_w
-                    self.phase_bias[i][j] = parameters.limb_to_body_CPG_phi
+                if ((j==16)and(i<4)):
+                    self.coupling_weights[i, j] = parameters.limb_to_body_CPG_w
+                    self.phase_bias[i, j] = parameters.limb_to_body_CPG_phi
+                elif ((j==18)and(4<=i<=7)):
+                    self.coupling_weights[i, j] = parameters.limb_to_body_CPG_w
+                    self.phase_bias[i, j] = parameters.limb_to_body_CPG_phi
+                elif ((j==17)and(8<=i<=11)):
+                    self.coupling_weights[i, j] = parameters.limb_to_body_CPG_w
+                    self.phase_bias[i, j] = parameters.limb_to_body_CPG_phi
+                elif ((j==19)and(12<=i<=15)):
+                    self.coupling_weights[i, j] = parameters.limb_to_body_CPG_w
+                    self.phase_bias[i, j] = parameters.limb_to_body_CPG_phi
 
         # within the limb CPG
         for i in range(self.n_oscillators - self.n_oscillators_legs + 1, self.n_oscillators):
             for j in range(self.n_oscillators - self.n_oscillators_legs + 1, self.n_oscillators):
                     if (i==j):
                         continue  
-                    self.coupling_weights[i][j] = parameters.within_limb_CPG_w
-                    self.phase_bias[i][j] = parameters.within_limb_CPG_phi
+                    self.coupling_weights[i, j] = parameters.within_limb_CPG_w
+                    self.phase_bias[i, j] = parameters.within_limb_CPG_phi
 
     def set_amplitudes_rate(self, parameters):
         self.rates[:] = parameters.conv_fac
@@ -137,6 +138,7 @@ class RobotParameters(dict):
             self.nominal_amplitudes[16:20] = nom_amp_limb
         else:
             self.nominal_amplitudes[16:20] = parameters.lRsat
+
         if (parameters.bdlow <= parameters.drive <= parameters.bdhigh):
             nom_amp_body = parameters.bcR1 * parameters.drive + parameters.bcR0
             self.nominal_amplitudes[:16] = nom_amp_body

@@ -11,7 +11,7 @@ from simulation_parameters import SimulationParameters
 from network import SalamandraNetwork
 
 
-def run_network(duration, update=False, drive=0, timestep=1e-2):
+def run_network(duration, update=True, drive=0, timestep=1e-2):
     """ Run network without MuJoCo and plot results
     Parameters
     ----------
@@ -26,13 +26,14 @@ def run_network(duration, update=False, drive=0, timestep=1e-2):
     times = np.arange(0, duration, timestep)
     n_iterations = len(times)
     sim_parameters = SimulationParameters(
-        drive=drive,
+        drive = drive,
         amplitude_gradient=None,
         phase_lag_body=None,
         turn=None,
     )
-    pylog.warning(
-        'Modify the scalar drive to be a vector of length n_iterations. By doing so the drive will be modified to be drive[i] at each time step i.')
+    #pylog.warning(
+    #    'Modify the scalar drive to be a vector of length n_iterations. By doing so the drive will be modified to be drive[i] at each time step i.')
+    drive_array = np.linspace(0, 6, n_iterations) # constructs an array of n_iterations size
     state = SalamandraState.salamandra_robot(n_iterations)
     network = SalamandraNetwork(sim_parameters, n_iterations, state)
     osc_left = np.arange(8)
@@ -62,8 +63,8 @@ def run_network(duration, update=False, drive=0, timestep=1e-2):
     outputs_log[0, :] = network.get_motor_position_output(iteration=0)
 
     # comment below pass to run file
-    pylog.warning('Remove the pass to run your code!!')
-    pass
+    # pylog.warning('Remove the pass to run your code!!')
+    # pass
 
     pylog.warning(
         'Implement plots here, try to plot the various logged data to check the implementation')
@@ -72,9 +73,8 @@ def run_network(duration, update=False, drive=0, timestep=1e-2):
     for i, time0 in enumerate(times[1:]):
         if update:
             network.robot_parameters.update(
-                SimulationParameters(
+                SimulationParameters(drive = drive_array[i])
                 )
-            )
         network.step(i, time0, timestep)
         phases_log[i+1, :] = network.state.phases(iteration=i+1)
         amplitudes_log[i+1, :] = network.state.amplitudes(iteration=i+1)
@@ -89,16 +89,40 @@ def run_network(duration, update=False, drive=0, timestep=1e-2):
     ))
 
     # Implement plots of network results
-    pylog.warning('Implement plots')
+    # pylog.warning('Implement plots')
 
+    #joint output commands qi
+    print( np.shape(outputs_log[:, 1]))
+    plt.figure()
+    plt.subplot(411)
+    for i in range(8):
+        plt.plot(times,outputs_log[:, i]+i*np.pi/3)
+
+    #limb output command q
+    plt.subplot(412)
+    for i in range(8):
+        plt.plot(times,outputs_log[:, i+8]+i*np.pi/3)
+
+    #frequencies
+    plt.subplot(413)
+    for i in range(20):
+        plt.plot(drive_array, freqs_log[:, i])
+
+    # drive d
+    plt.subplot(414)
+    plt.plot(times,drive_array)
+    
     return
 
 
 def exercise_1a_networks(plot, timestep=1e-2):
     """[Project 1] Exercise 1: """
 
-    run_network(duration=5)
+    # duration = 5
+    # times = np.arange(0, duration, timestep)
+    # n_iterations = len(times)
 
+    run_network(duration=3)
     # Show plots
     if plot:
         plt.show()

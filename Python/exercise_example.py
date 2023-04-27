@@ -23,7 +23,8 @@ def exercise_example(timestep):
             turn=0,  # Another example
             # ...
         )
-        for drive in np.linspace(3, 4, 2)
+        for drive in np.linspace(2, 4, 2)
+        
         # for amplitudes in ...
         # for ...
     ]
