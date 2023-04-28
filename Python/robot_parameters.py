@@ -88,11 +88,11 @@ class RobotParameters(dict):
 
     def set_coupling_weights_and_phase_bias(self, parameters):
         # upwards, downwards and contralateral in body CPG
-        for i in range(self.n_oscillators - self.n_oscillators_legs): # range(16)
-            for j in range(self.n_oscillators - self.n_oscillators_legs): # range(16)
+        for i in range(self.n_oscillators - self.n_oscillators_legs): # range(16) 0->15
+            for j in range(self.n_oscillators - self.n_oscillators_legs): # range(16) 0->15
                 if (i==j):
                     continue
-                elif (((i-j)==1) and ((i+j)!=2*self.n_body_joints-1)): # downwards, breaks if case i=8 and j=9
+                elif (((i-j)==1) and (i+j)!=2*self.n_body_joints-1): # downwards, breaks if case i=7 and j=8
                     self.coupling_weights[i, j] = parameters.downward_body_CPG_w
                     self.phase_bias[i, j] = parameters.downward_body_CPG_phi
                 elif ((i-j)==-1 and (i+j)!=2*self.n_body_joints-1): # upwards
@@ -101,6 +101,12 @@ class RobotParameters(dict):
                 elif ((i==j+self.n_body_joints) or (j==i+self.n_body_joints)): #contralateral
                     self.coupling_weights[i, j] = parameters.contralateral_body_CPG_w
                     self.phase_bias[i, j] = parameters.contralateral_body_CPG_phi
+            # print("-----------------------")
+            # print(i)
+            # print("Coupling weights: ")
+            # print(self.coupling_weights[i])
+            # print("Phase bias: ")
+            # print(self.phase_bias[i])
 
         # from limb to body CPG
         for i in range(self.n_oscillators):
@@ -119,11 +125,17 @@ class RobotParameters(dict):
                 elif ((j==19)and(12<=i<=15)):
                     self.coupling_weights[i, j] = parameters.limb_to_body_CPG_w
                     self.phase_bias[i, j] = parameters.limb_to_body_CPG_phi
+            # print("-----------------------")
+            # print(i)
+            # print("Coupling weights: ")
+            # print(self.coupling_weights[i])
+            # print("Phase bias: ")
+            # print(self.phase_bias[i])
 
         # within the limb CPG
-        for i in range(self.n_oscillators - self.n_oscillators_legs + 1, self.n_oscillators):
-            for j in range(self.n_oscillators - self.n_oscillators_legs + 1, self.n_oscillators):
-                    if (i==j):
+        for i in range(self.n_oscillators - self.n_oscillators_legs, self.n_oscillators):
+            for j in range(self.n_oscillators - self.n_oscillators_legs, self.n_oscillators):
+                    if (i==j) or (i+j==37):
                         continue  
                     self.coupling_weights[i, j] = parameters.within_limb_CPG_w
                     self.phase_bias[i, j] = parameters.within_limb_CPG_phi
@@ -144,4 +156,3 @@ class RobotParameters(dict):
             self.nominal_amplitudes[:16] = nom_amp_body
         else:
             self.nominal_amplitudes[:16] = parameters.bRsat
-

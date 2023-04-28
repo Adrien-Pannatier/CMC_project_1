@@ -92,7 +92,7 @@ def run_network(duration, update=True, drive=0, timestep=1e-2):
     # pylog.warning('Implement plots')
 
     #joint output commands qi
-    print( np.shape(outputs_log[:, 1]))
+    #print( np.shape(outputs_log[:, 1]))
     plt.figure()
     plt.subplot(411)
     for i in range(8):
@@ -122,7 +122,7 @@ def exercise_1a_networks(plot, timestep=1e-2):
     # times = np.arange(0, duration, timestep)
     # n_iterations = len(times)
 
-    run_network(duration=3)
+    run_network(duration=10)
     # Show plots
     if plot:
         plt.show()

@@ -33,23 +33,40 @@ def network_ode(time, state, robot_parameters, loads, contact_sens):
     phases = state[:n_oscillators]
     amplitudes = state[n_oscillators:2*n_oscillators]
     der_phases = np.zeros_like(phases)
+    sum_phase = 0
     der_amplitudes = np.zeros_like(amplitudes)
-    # CONV_FAC = 20 
-    # Implement equation here
-    # robot_parameters.update(parameters) a = 20
-    # BETTER TO USE FOR LOOP FOR EACH CASE IMO
-    ##########################################
 
     # array with [freq, coupling_weight, phase_bias, rates, nominal_amp] 
-    robot_param = robot_parameters.get_parameters() 
+    eq_param = robot_parameters.get_parameters() 
 
     for i in range(n_oscillators): # includes body (1->16) and limbs (17->20)
+        # print("i")
+        # print(i)
         for j in range(n_oscillators): # includes body (1->16) and limbs (17->20)
             if i == j:
                 continue
-            sum_phase = np.sum(amplitudes[j]*robot_param[1][i][j]*np.sin(phases[j] - phases[i] - robot_param[2][i][j]))
-        der_phases[i] = 2*np.pi*robot_param[0][i] + sum_phase 
-        der_amplitudes[i] = robot_param[3][i]*(robot_param[4][i]-amplitudes[i])
+            sum_phase += amplitudes[j]*eq_param[1][i,j]*np.sin(phases[j] - phases[i] - eq_param[2][i, j])
+            # bias = eq_param[2][i, j]
+        der_phases[i] = 2*np.pi*eq_param[0][i] + sum_phase 
+        # biases[i] = bias ######################################3
+        der_amplitudes[i] = eq_param[3][i]*(eq_param[4][i]-amplitudes[i])
+    # der_phases[8, 9, 10, 11] to check, prob not problem of freqs, 
+    # if (np.max(eq_param[0]!=0)):
+    # print("----------------------------------------")
+    # print("der_phases: ")
+    # print(der_phases)
+    # print("sum_phases: ")
+    # print(sum_phases)
+    # print("sin_phases: ")
+    # print(sin_phases)
+    # print("biases: ")
+    # print(biases)
+    # print("nominal amplitudes: ")
+    # print(eq_param[4])
+    # print("amplitudes: ")
+    # print(amplitudes)
+    # print("freqs :")
+    # print(eq_param[3])
     return np.concatenate([der_phases, der_amplitudes])
 
 def motor_output(phases, amplitudes, iteration):
@@ -92,10 +109,18 @@ def motor_output(phases, amplitudes, iteration):
     # body output for joints 
     for i in range(8):
         motor_outputs[i] = amplitudes[i]*(1 + np.cos(phases[i])) - amplitudes[i+8]*(1 + np.cos(phases[i+8]))
-        print("----------------------------------------")
-        print(i)
-        print(amplitudes[i])
-        print(amplitudes[i+8])
+        # print("----------------------------------------")
+        # print(i)
+        # print(amplitudes[i])
+        # print(amplitudes[i+8])
+    # phases[8, 9, 10, 11] weird, they're equal to phases [0, 1, 2, 3]
+    # print("----------------------------------------")
+    # print("motor_outputs :")
+    # print(motor_outputs)
+    # print("amplitudes :")
+    # print(amplitudes)
+    # print("cos phases :")
+    # print(np.cos(phases))
         
     # body out put for shoulder and wrist joints
 
