@@ -102,35 +102,61 @@ def run_network(duration, update=True, drive=0, timestep=1e-2):
 
     #joint output commands qi
     #print( np.shape(outputs_log[:, 1]))
-    plt.figure()
-    plt.subplot(411)
+    f, axes = plt.subplots(4)
+    # axes[0].plot(x, y1, c='r', label="sine")
+    # axes[0].legend(loc='upper left')
+    # axes[1].plot(x, y2, c='g', label="cosine")
+    # axes[1].legend(loc='upper left')
+    # axes[2].plot(x, y3, c='b', label="tan")
+    # axes[2].legend(loc='upper left')
+    # plt.figure()
+    # plt.subplot(411)
     for i in range(8):
-        plt.plot(times,outputs_log[:, i]+i*np.pi/3)
-
+        axes[0].plot(times,outputs_log[:, i]-i*np.pi/3)
+        #, label="body {num}".format(num =(i+1))
+    axes[0].set_ylabel("x Body")
+    # axes[0].legend(loc='upper left')
     #limb output command q
-    plt.subplot(412)
+    # plt.subplot(412)
     for i in range(8):
-        plt.plot(times,outputs_log[:, i+8]+i*np.pi/3)
+        axes[1].plot(times,outputs_log[:, i+8]-i*np.pi/3)
+        #, label="limb {num}".format(num =(i+1))
+    axes[1].set_ylabel("x Limb")
+    # axes[1].legend(loc='upper left')
 
     #frequencies
-    plt.subplot(413)
+    # plt.subplot(413)
     for i in range(20):
-        plt.plot(times,freqs_osc_log[:, i])
+        axes[2].plot(times,freqs_osc_log[:, i])
+    axes[2].set_ylabel("Freq [Hz]")
+    # axes[2].legend(loc='upper left')
 
     # drive d
-    plt.subplot(414)
-    plt.plot(times,drive_array)
-    
-    plt.figure()
+    # plt.subplot(414)
+    walk_switch = np.ones(len(times)) * 1
+    swim_switch = np.ones(len(times)) * 3
+    axes[3].plot(times,drive_array, 'k-')
+    axes[3].plot(times,walk_switch,'y--', label="walk")
+    axes[3].plot(times,swim_switch,'y--', label="swim")
+    axes[3].set_ylabel("Drive")
+    axes[3].set_xlabel("Time [s]")
+    axes[3].legend(loc='upper left')
+
+    f.tight_layout(pad=1.0)
+
+    f, axes = plt.subplots(2)
 
     #frequencies
-    plt.subplot(211)
+    # plt.subplot(211)
     for i in range(20):
-        plt.plot(drive_array,freqs_log[:, i])
-    plt.subplot(212)
+        axes[0].plot(drive_array,freqs_log[:, i])
+    axes[0].set_ylabel("v [Hz]")
+    
+    # plt.subplot(212)
     for i in range(20):
-        plt.plot(drive_array,nom_amp_log[:, i])
-
+        axes[1].plot(drive_array,nom_amp_log[:, i])
+    axes[1].set_ylabel("R")
+    axes[1].set_xlabel("Drive")
     return
 
 
@@ -141,7 +167,7 @@ def exercise_1a_networks(plot, timestep=1e-2):
     # times = np.arange(0, duration, timestep)
     # n_iterations = len(times)
 
-    run_network(duration=40)
+    run_network(duration=3)
     # Show plots
     if plot:
         plt.show()

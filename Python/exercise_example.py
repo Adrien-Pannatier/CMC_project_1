@@ -35,7 +35,7 @@ def exercise_example(timestep):
         filename = './logs/example/simulation_{}.{}'
         sim, data = simulation(
             sim_parameters=sim_parameters,  # Simulation parameters, see above
-            arena='land',  # Can also be 'land', give it a try!
+            arena='water',  # Can also be 'land', give it a try!
             # fast=True,  # For fast mode (not real-time)
             headless=False,  # For headless mode (No GUI, could be faster)
             record=False,  # Record video
