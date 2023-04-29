@@ -51,6 +51,11 @@ def run_network(duration, update=True, drive=0, timestep=1e-2):
         len(network.state.amplitudes(iteration=0))
     ])
     amplitudes_log[0, :] = network.state.amplitudes(iteration=0)
+    freqs_osc_log = np.zeros([
+        n_iterations,
+        len(network.robot_parameters.der_phases)
+    ])
+    freqs_osc_log[0, :] = network.robot_parameters.der_phases/(2*np.pi)
     freqs_log = np.zeros([
         n_iterations,
         len(network.robot_parameters.freqs)
@@ -61,13 +66,15 @@ def run_network(duration, update=True, drive=0, timestep=1e-2):
         len(network.get_motor_position_output(iteration=0))
     ])
     outputs_log[0, :] = network.get_motor_position_output(iteration=0)
-
+    nom_amp_log = np.zeros([
+        n_iterations,
+        len(network.robot_parameters.nominal_amplitudes)
+    ])
+    nom_amp_log[0, :] = network.robot_parameters.nominal_amplitudes
     # comment below pass to run file
     # pylog.warning('Remove the pass to run your code!!')
     # pass
 
-    pylog.warning(
-        'Implement plots here, try to plot the various logged data to check the implementation')
     # Run network ODE and log data
     tic = time.time()
     for i, time0 in enumerate(times[1:]):
@@ -80,6 +87,8 @@ def run_network(duration, update=True, drive=0, timestep=1e-2):
         amplitudes_log[i+1, :] = network.state.amplitudes(iteration=i+1)
         outputs_log[i+1, :] = network.get_motor_position_output(iteration=i+1)
         freqs_log[i+1, :] = network.robot_parameters.freqs
+        freqs_osc_log[i+1, :] = network.robot_parameters.der_phases/(2*np.pi)
+        nom_amp_log[i+1, :] = network.robot_parameters.nominal_amplitudes
     toc = time.time()
 
     # Network performance
@@ -106,12 +115,22 @@ def run_network(duration, update=True, drive=0, timestep=1e-2):
     #frequencies
     plt.subplot(413)
     for i in range(20):
-        plt.plot(drive_array, freqs_log[:, i])
+        plt.plot(times,freqs_osc_log[:, i])
 
     # drive d
     plt.subplot(414)
     plt.plot(times,drive_array)
     
+    plt.figure()
+
+    #frequencies
+    plt.subplot(211)
+    for i in range(20):
+        plt.plot(drive_array,freqs_log[:, i])
+    plt.subplot(212)
+    for i in range(20):
+        plt.plot(drive_array,nom_amp_log[:, i])
+
     return
 
 
@@ -122,7 +141,7 @@ def exercise_1a_networks(plot, timestep=1e-2):
     # times = np.arange(0, duration, timestep)
     # n_iterations = len(times)
 
-    run_network(duration=10)
+    run_network(duration=40)
     # Show plots
     if plot:
         plt.show()

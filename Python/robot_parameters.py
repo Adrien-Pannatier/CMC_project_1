@@ -33,6 +33,8 @@ class RobotParameters(dict):
         self.feedback_gains_swim = np.zeros(self.n_oscillators)
         self.feedback_gains_walk = np.zeros(self.n_oscillators)
         
+        self.der_phases = np.zeros(self.n_oscillators)
+
         # gains for final motor output
         self.position_body_gain = parameters.position_body_gain
         self.position_limb_gain = parameters.position_limb_gain
@@ -72,6 +74,12 @@ class RobotParameters(dict):
     def get_parameters(self):
         return self.freqs, self.coupling_weights, self.phase_bias, self.rates, self.nominal_amplitudes
     
+    def set_der_phases(self, der_phases):
+        self.der_phases = der_phases
+
+    def get_der_phases(self):
+        return self.der_phases
+
     def set_frequencies(self, parameters):
         # need two sets of frequencies : for the body and for the limb
         if (parameters.ldlow <= parameters.drive <= parameters.ldhigh):
@@ -116,15 +124,23 @@ class RobotParameters(dict):
                 if ((j==16)and(i<4)):
                     self.coupling_weights[i, j] = parameters.limb_to_body_CPG_w
                     self.phase_bias[i, j] = parameters.limb_to_body_CPG_phi
+                    self.coupling_weights[j, i] = parameters.limb_to_body_CPG_w
+                    self.phase_bias[j, i] = parameters.limb_to_body_CPG_phi
                 elif ((j==18)and(4<=i<=7)):
                     self.coupling_weights[i, j] = parameters.limb_to_body_CPG_w
                     self.phase_bias[i, j] = parameters.limb_to_body_CPG_phi
+                    self.coupling_weights[j, i] = parameters.limb_to_body_CPG_w
+                    self.phase_bias[j, i] = parameters.limb_to_body_CPG_phi
                 elif ((j==17)and(8<=i<=11)):
                     self.coupling_weights[i, j] = parameters.limb_to_body_CPG_w
                     self.phase_bias[i, j] = parameters.limb_to_body_CPG_phi
+                    self.coupling_weights[j, i] = parameters.limb_to_body_CPG_w
+                    self.phase_bias[j, i] = parameters.limb_to_body_CPG_phi
                 elif ((j==19)and(12<=i<=15)):
                     self.coupling_weights[i, j] = parameters.limb_to_body_CPG_w
                     self.phase_bias[i, j] = parameters.limb_to_body_CPG_phi
+                    self.coupling_weights[j, i] = parameters.limb_to_body_CPG_w
+                    self.phase_bias[j, i] = parameters.limb_to_body_CPG_phi
             # print("-----------------------")
             # print(i)
             # print("Coupling weights: ")
@@ -135,7 +151,7 @@ class RobotParameters(dict):
         # within the limb CPG
         for i in range(self.n_oscillators - self.n_oscillators_legs, self.n_oscillators):
             for j in range(self.n_oscillators - self.n_oscillators_legs, self.n_oscillators):
-                    if (i==j) or (i+j==37):
+                    if (i==j) or (i+j==35): # for no diagonal weight
                         continue  
                     self.coupling_weights[i, j] = parameters.within_limb_CPG_w
                     self.phase_bias[i, j] = parameters.within_limb_CPG_phi

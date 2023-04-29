@@ -45,9 +45,6 @@ class SimulationParameters:
         self.ldhigh = 3
         self.drive = 0
         # Feel free to add more parameters 
-        # (ex: MLR drive)
-        # self.drive_mlr = ...
-        # ...
 
         # Disruptions
         self.set_seed = False

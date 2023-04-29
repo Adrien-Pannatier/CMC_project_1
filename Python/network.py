@@ -4,7 +4,6 @@ import numpy as np
 from scipy.integrate import ode
 from robot_parameters import RobotParameters
 
-
 def network_ode(time, state, robot_parameters, loads, contact_sens):
     """Network_ODE
 
@@ -33,6 +32,7 @@ def network_ode(time, state, robot_parameters, loads, contact_sens):
     phases = state[:n_oscillators]
     amplitudes = state[n_oscillators:2*n_oscillators]
     der_phases = np.zeros_like(phases)
+    # sum_phases = np.zeros_like(phases)
     sum_phase = 0
     der_amplitudes = np.zeros_like(amplitudes)
 
@@ -40,16 +40,14 @@ def network_ode(time, state, robot_parameters, loads, contact_sens):
     eq_param = robot_parameters.get_parameters() 
 
     for i in range(n_oscillators): # includes body (1->16) and limbs (17->20)
-        # print("i")
-        # print(i)
         for j in range(n_oscillators): # includes body (1->16) and limbs (17->20)
             if i == j:
                 continue
             sum_phase += amplitudes[j]*eq_param[1][i,j]*np.sin(phases[j] - phases[i] - eq_param[2][i, j])
-            # bias = eq_param[2][i, j]
         der_phases[i] = 2*np.pi*eq_param[0][i] + sum_phase 
-        # biases[i] = bias ######################################3
         der_amplitudes[i] = eq_param[3][i]*(eq_param[4][i]-amplitudes[i])
+    
+    robot_parameters.set_der_phases(der_phases)
     # der_phases[8, 9, 10, 11] to check, prob not problem of freqs, 
     # if (np.max(eq_param[0]!=0)):
     # print("----------------------------------------")
@@ -66,7 +64,7 @@ def network_ode(time, state, robot_parameters, loads, contact_sens):
     # print("amplitudes: ")
     # print(amplitudes)
     # print("freqs :")
-    # print(eq_param[3])
+    # print(eq_param[0])
     return np.concatenate([der_phases, der_amplitudes])
 
 def motor_output(phases, amplitudes, iteration):
@@ -113,14 +111,6 @@ def motor_output(phases, amplitudes, iteration):
         # print(i)
         # print(amplitudes[i])
         # print(amplitudes[i+8])
-    # phases[8, 9, 10, 11] weird, they're equal to phases [0, 1, 2, 3]
-    # print("----------------------------------------")
-    # print("motor_outputs :")
-    # print(motor_outputs)
-    # print("amplitudes :")
-    # print(amplitudes)
-    # print("cos phases :")
-    # print(np.cos(phases))
         
     # body out put for shoulder and wrist joints
 
@@ -130,6 +120,14 @@ def motor_output(phases, amplitudes, iteration):
         # wrist joints
         motor_outputs[9+2*i] = amplitudes[16+i]*np.sin(phases[16+i])
     
+    # print("----------------------------------------")
+    # print("motor_outputs :")
+    # print(motor_outputs)
+    # print("amplitudes :")
+    # print(amplitudes)
+    # print("cos phases :")
+    # print(np.cos(phases))
+
     return motor_outputs
 
 class SalamandraNetwork:
