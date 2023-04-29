@@ -100,12 +100,12 @@ class RobotParameters(dict):
             for j in range(self.n_oscillators - self.n_oscillators_legs): # range(16) 0->15
                 if (i==j):
                     continue
-                elif (((i-j)==1) and (i+j)!=2*self.n_body_joints-1): # downwards, breaks if case i=7 and j=8
-                    self.coupling_weights[i, j] = parameters.downward_body_CPG_w
-                    self.phase_bias[i, j] = parameters.downward_body_CPG_phi
-                elif ((i-j)==-1 and (i+j)!=2*self.n_body_joints-1): # upwards
+                elif (((i-j)==1) and (i+j)!=2*self.n_body_joints-1): # upwards, breaks if case i=7 and j=8
                     self.coupling_weights[i, j] = parameters.upward_body_CPG_w
                     self.phase_bias[i, j] = parameters.upward_body_CPG_phi
+                elif ((i-j)==-1 and (i+j)!=2*self.n_body_joints-1): # downwards
+                    self.coupling_weights[i, j] = parameters.downward_body_CPG_w
+                    self.phase_bias[i, j] = parameters.downward_body_CPG_phi
                 elif ((i==j+self.n_body_joints) or (j==i+self.n_body_joints)): #contralateral
                     self.coupling_weights[i, j] = parameters.contralateral_body_CPG_w
                     self.phase_bias[i, j] = parameters.contralateral_body_CPG_phi
