@@ -61,4 +61,3 @@ class SimulationParameters:
         # Update object with provided keyword arguments
         # NOTE: This overrides the previous declarations
         self.__dict__.update(kwargs)
-

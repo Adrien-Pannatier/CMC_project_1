@@ -35,12 +35,12 @@ def exercise_example(timestep):
         filename = './logs/example/simulation_{}.{}'
         sim, data = simulation(
             sim_parameters=sim_parameters,  # Simulation parameters, see above
-            arena='water',  # Can also be 'land', give it a try!
+            arena='land',  # Can also be 'land', give it a try!
             # fast=True,  # For fast mode (not real-time)
             headless=False,  # For headless mode (No GUI, could be faster)
             record=False,  # Record video
             record_path="videos/test_video_drive_" + \
-            str(simulation_i),  # video savging path
+            str(simulation_i),  # video saving path
             camera_id=2  # camera type: 0=top view, 1=front view, 2=side view,
         )
         # Log robot data

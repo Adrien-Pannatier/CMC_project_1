@@ -32,39 +32,33 @@ def network_ode(time, state, robot_parameters, loads, contact_sens):
     phases = state[:n_oscillators]
     amplitudes = state[n_oscillators:2*n_oscillators]
     der_phases = np.zeros_like(phases)
-    # sum_phases = np.zeros_like(phases)
-    sum_phase = 0
     der_amplitudes = np.zeros_like(amplitudes)
+    sum_phase = 0
 
     # array with [freq, coupling_weight, phase_bias, rates, nominal_amp] 
     eq_param = robot_parameters.get_parameters() 
 
-    for i in range(n_oscillators): # includes body (1->16) and limbs (17->20)
-        for j in range(n_oscillators): # includes body (1->16) and limbs (17->20)
-            if i == j:
-                continue
-            sum_phase += amplitudes[j]*eq_param[1][i,j]*np.sin(phases[j] - phases[i] - eq_param[2][i, j])
-        der_phases[i] = 2*np.pi*eq_param[0][i] + sum_phase 
-        der_amplitudes[i] = eq_param[3][i]*(eq_param[4][i]-amplitudes[i])
+    n = len(phases)
     
-    robot_parameters.set_der_phases(der_phases)
-    # der_phases[8, 9, 10, 11] to check, prob not problem of freqs, 
-    # if (np.max(eq_param[0]!=0)):
-    # print("----------------------------------------")
-    # print("der_phases: ")
+
+    sin_diff = np.sin(phases.reshape((n, 1)) - phases.reshape((1, n)) - eq_param[2])
+    der_phases = 2*np.pi*eq_param[0] + np.dot(amplitudes, (eq_param[1]* sin_diff))
+    
+    der_amplitudes = eq_param[3]*(eq_param[4]-amplitudes)
     # print(der_phases)
-    # print("sum_phases: ")
-    # print(sum_phases)
-    # print("sin_phases: ")
-    # print(sin_phases)
-    # print("biases: ")
-    # print(biases)
-    # print("nominal amplitudes: ")
-    # print(eq_param[4])
-    # print("amplitudes: ")
-    # print(amplitudes)
-    # print("freqs :")
-    # print(eq_param[0])
+    # print(der_phases)
+    # print(np.dot(np.dot(amplitudes, eq_param[1]), sin_diff))
+    # for i in range(n_oscillators): # includes body (1->16) and limbs (17->20)
+    #     for j in range(n_oscillators): # includes body (1->16) and limbs (17->20)
+    #         if i == j:
+    #             continue
+    #         sum_phase += amplitudes[j]*eq_param[1][i,j]*np.sin(phases[j] - phases[i] - eq_param[2][i, j])
+    #     der_phases[i] = 2*np.pi*eq_param[0][i] + sum_phase 
+    # print(der_phases)
+
+
+    robot_parameters.set_der_phases(der_phases)
+    # print(phases)
     return np.concatenate([der_phases, der_amplitudes])
 
 def motor_output(phases, amplitudes, iteration):
@@ -92,25 +86,13 @@ def motor_output(phases, amplitudes, iteration):
     # output -> spine output for motor (head to tail) + leg output (Front Left
     # shoulder, Front Left wrist, Front Right, Hind Left, Hind right)
     
-    # phases = np.append(
-    #    np.zeros_like(phases)[
-    #        :16], np.zeros_like(phases)[
-    #        16:20])
-    # amplitudes = np.append(
-    #    np.zeros_like(amplitudes)[
-    #        :16], np.zeros_like(amplitudes)[
-    #        16:20])
-    
     motor_outputs = np.zeros_like(amplitudes)[:16]
     show = np.zeros_like(amplitudes)[:16]
     
     # body output for joints 
     for i in range(8):
         motor_outputs[i] = amplitudes[i]*(1 + np.cos(phases[i])) - amplitudes[i+8]*(1 + np.cos(phases[i+8]))
-        # print("----------------------------------------")
-        # print(i)
-        # print(amplitudes[i])
-        # print(amplitudes[i+8])
+
         
     # body out put for shoulder and wrist joints
 
@@ -119,14 +101,6 @@ def motor_output(phases, amplitudes, iteration):
         motor_outputs[8+2*i] = amplitudes[16+i]*np.cos(phases[16+i])
         # wrist joints
         motor_outputs[9+2*i] = amplitudes[16+i]*np.sin(phases[16+i])
-    
-    # print("----------------------------------------")
-    # print("motor_outputs :")
-    # print(motor_outputs)
-    # print("amplitudes :")
-    # print(amplitudes)
-    # print("cos phases :")
-    # print(np.cos(phases))
 
     return motor_outputs
 
@@ -144,7 +118,7 @@ class SalamandraNetwork:
         # Replace your oscillator phases here
         self.state.set_phases(
             iteration=0,
-            value=1e-4*np.random.rand(self.robot_parameters.n_oscillators),
+            value=np.array([7.90153315, 7.73917846, 7.65291747, 7.29829689, 11.31822623, 10.93769451, 10.84641367, 10.68740331, 11.0431258,  10.88077111, 10.79451012, 10.43988954, 8.17663357,  7.79610186,  7.70482101,  7.54581065,  4.3889223,  7.53051495, 7.53051496,  4.3889223]), # [ph_0, 2*ph_0, 3*ph_0, 4*ph_0, 5*ph_0, 6*ph_0, 7*ph_0, 8*ph_0, -ph_0, -2*ph_0, -3*ph_0, -4*ph_0, -5*ph_0, -6*ph_0, -7*ph_0, -8*ph_0, np.pi, np.pi, np.pi, np.pi]
         )
         # Set solver
         self.solver = ode(f=network_ode)

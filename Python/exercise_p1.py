@@ -31,8 +31,6 @@ def run_network(duration, update=True, drive=0, timestep=1e-2):
         phase_lag_body=None,
         turn=None,
     )
-    #pylog.warning(
-    #    'Modify the scalar drive to be a vector of length n_iterations. By doing so the drive will be modified to be drive[i] at each time step i.')
     drive_array = np.linspace(0, 6, n_iterations) # constructs an array of n_iterations size
     state = SalamandraState.salamandra_robot(n_iterations)
     network = SalamandraNetwork(sim_parameters, n_iterations, state)
@@ -71,9 +69,6 @@ def run_network(duration, update=True, drive=0, timestep=1e-2):
         len(network.robot_parameters.nominal_amplitudes)
     ])
     nom_amp_log[0, :] = network.robot_parameters.nominal_amplitudes
-    # comment below pass to run file
-    # pylog.warning('Remove the pass to run your code!!')
-    # pass
 
     # Run network ODE and log data
     tic = time.time()
@@ -129,20 +124,25 @@ def run_network(duration, update=True, drive=0, timestep=1e-2):
     for i in range(20):
         axes[2].plot(times,freqs_osc_log[:, i])
     axes[2].set_ylabel("Freq [Hz]")
+    axes[2].set_ylim([0.1, 1.5])
     # axes[2].legend(loc='upper left')
 
     # drive d
     # plt.subplot(414)
     walk_switch = np.ones(len(times)) * 1
     swim_switch = np.ones(len(times)) * 3
+    end_switch = np.ones(len(times)) * 5
     axes[3].plot(times,drive_array, 'k-')
-    axes[3].plot(times,walk_switch,'y--', label="walk")
-    axes[3].plot(times,swim_switch,'y--', label="swim")
+    axes[3].plot(times,walk_switch,'y--')
+    axes[3].plot(times,swim_switch,'y--')
+    axes[3].plot(times,end_switch,'y--')
     axes[3].set_ylabel("Drive")
     axes[3].set_xlabel("Time [s]")
     axes[3].legend(loc='upper left')
-
-    f.tight_layout(pad=1.0)
+    axes[3].text(2.73, 1.93, "Walking", rotation = "horizontal")
+    axes[3].text(35.7, 3.85, "Swimming", rotation = "horizontal")
+    
+    # f.tight_layout(pad=1.0)
 
     f, axes = plt.subplots(2)
 
@@ -163,11 +163,7 @@ def run_network(duration, update=True, drive=0, timestep=1e-2):
 def exercise_1a_networks(plot, timestep=1e-2):
     """[Project 1] Exercise 1: """
 
-    # duration = 5
-    # times = np.arange(0, duration, timestep)
-    # n_iterations = len(times)
-
-    run_network(duration=3)
+    run_network(duration=40)
     # Show plots
     if plot:
         plt.show()

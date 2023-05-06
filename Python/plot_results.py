@@ -106,7 +106,10 @@ def compute_speed(links_positions, links_vel, nsteps_considered=200):
         x = links_pos_xy[idx, :9, 0]
         y = links_pos_xy[idx, :9, 1]
 
-        pheadtail = links_pos_xy[idx][0]-links_pos_xy[idx][8]  # head - tail
+        # print(links_pos_xy[idx][0][:])
+        # print(links_pos_xy[idx][8][:])
+        
+        pheadtail = np.float64(links_pos_xy[idx][0])-np.float64(links_pos_xy[idx][8])  # head - tail
         pcom_xy = np.mean(links_pos_xy[idx, :9, :], axis=0)
         vcom_xy = np.mean(joints_vel_xy[idx], axis=0)
 
@@ -138,31 +141,38 @@ def sum_torques(joints_data):
     """Compute sum of torques"""
     return np.sum(np.abs(joints_data[:, :]))
 
-
-def main(plot=True):
-    """Main"""
-    # Load data - an example of how to do this is provided in the commented text below
-    # data = SalamandraData.from_file('simulation_0.h5')
-    # with open('simulation_0.pickle', 'rb') as param_file:
-    #     parameters = pickle.load(param_file)
-    # timestep = data.timestep
-    # n_iterations = np.shape(data.sensors.links.array)[0]
-    # times = np.arange(
-    #     start=0,
-    #     stop=timestep*n_iterations,
-    #     step=timestep,
-    # )
-    # timestep = times[1] - times[0]
-    # amplitudes = parameters.amplitudes
-    # phase_lag_body = parameters.phase_lag_body
-    # osc_phases = data.state.phases()
-    # osc_amplitudes = data.state.amplitudes()
-    # links_positions = data.sensors.links.urdf_positions()
-    # head_positions = links_positions[:, 0, :]
-    # tail_positions = links_positions[:, 8, :]
-    # joints_positions = data.sensors.joints.positions_all()
-    # joints_velocities = data.sensors.joints.velocities_all()
-    # joints_torques = data.sensors.joints.motor_torques_all()
+def plot_ex_2a(num_it):
+    speed_fw = np.zeros(num_it)
+    drive = np.zeros(num_it)
+    phase_lag_body = np.zeros(num_it)
+    for sim_num in range(num_it):
+        filename = './logs/ex_2a/simulation_{}.{}'
+        data = SalamandraData.from_file(filename.format(sim_num, 'h5'))
+        with open(filename.format(sim_num, 'pickle'), 'rb') as param_file:                         
+        # data = SalamandraData.from_file('./logs/ex_2a/simulation_0.h5')
+        # with open('./logs/ex_2a/simulation_0.pickle', 'rb') as param_file:
+            parameters = pickle.load(param_file)
+        # timestep = data.timestep
+        # n_iterations = np.shape(data.sensors.links.array)[0]
+        # times = np.arange(
+        #     start=0,
+        #     stop=timestep*n_iterations,
+        #     step=timestep,
+        # )
+        # timestep = times[1] - times[0]
+        drive[sim_num] = parameters.drive 
+        # amplitudes = parameters.amplitudes
+        phase_lag_body[sim_num] = parameters.phase_lag_body
+        # osc_phases = data.state.phases()
+        # osc_amplitudes = data.state.amplitudes()
+        links_positions = data.sensors.links.urdf_positions()
+        links_vel = data.sensors.links.com_lin_velocities()
+        head_positions = links_positions[:, 0, :]
+        tail_positions = links_positions[:, 8, :]
+        # joints_positions = data.sensors.joints.positions_all()
+        joints_velocities = data.sensors.joints.velocities_all()
+        # joints_torques = data.sensors.joints.motor_torques_all()
+        speed_fw[sim_num], speed_lat = compute_speed(links_positions, links_vel)
 
     # Notes:
     # For the links arrays: positions[iteration, link_id, xyz]
@@ -174,7 +184,16 @@ def main(plot=True):
     # plt.figure('Positions')
     # plot_positions(times, head_positions)
     # plt.figure('Trajectory')
-    # plot_trajectory(head_positions)
+    # plot_trajectory(head_positions),
+    print(drive)
+    print(phase_lag_body)
+    print(speed_fw)
+    results = np.array([drive, phase_lag_body, speed_fw]).T
+    plot_2d(results, ['drive', 'phase_lag_body', 'speed_fw'])
+
+def main(plot=True):
+    """Main"""
+    plot_ex_2a(num_it=25)
 
     # Show plots
     if plot:

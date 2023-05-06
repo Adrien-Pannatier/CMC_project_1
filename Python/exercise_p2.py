@@ -17,8 +17,45 @@ def exercise_2a_swim(timestep):
     Run the simulations for different swimming drives and phase lag between body
     oscillators.
     """
-    # Use exercise_example.py for reference
-    pass
+    # Parameters
+    parameter_set = [
+        SimulationParameters(
+            duration=10,  # Simulation duration in [s]
+            timestep=timestep,  # Simulation timestep in [s]
+            spawn_position=[0, 0, 0.1],  # Robot position in [m]
+            spawn_orientation=[0, 0, 0],  # Orientation in Euler angles [rad]
+            drive=drive,  # An example of parameter part of the grid search
+            amplitudes=[1, 2, 3],  
+            phase_lag_body=phase_lag_body, 
+            turn=0
+        )
+        # drive needed to be in swimming mode
+        for drive in np.linspace(3, 4.9, 5) 
+
+        # phase lag implemented as in Fig.6 of "Salamandra Robotica II: An Amphibious Robot to Study Salamander-Like Swimming and Walking Gaits"
+        for phase_lag_body in np.linspace(-1, 1, 5) 
+    ]
+
+    # Grid search
+    os.makedirs('./logs/ex_2a/', exist_ok=True)
+    for simulation_i, sim_parameters in enumerate(parameter_set):
+        filename = './logs/ex_2a/simulation_{}.{}'
+        sim, data = simulation(
+            sim_parameters=sim_parameters,  # Simulation parameters, see above
+            arena='water',  # Can also be 'land'
+            fast=True,  # For fast mode (not real-time)
+            headless=False,  # For headless mode (No GUI, could be faster)
+            record=False,  # Record video
+            record_path="videos/test_video_drive_" + \
+            str(simulation_i),  # video saving path
+            camera_id=2  # camera type: 0=top view, 1=front view, 2=side view,
+        )
+        # Log robot data
+        data.to_file(filename.format(simulation_i, 'h5'), sim.iteration)
+        # Log simulation parameters
+        with open(filename.format(simulation_i, 'pickle'), 'wb') as param_file:
+            pickle.dump(sim_parameters, param_file)
+
     return
 
 
@@ -31,8 +68,45 @@ def exercise_2b_walk(timestep):
     Run the simulations for different walking drives and phase lag between body
     oscillators.
     """
-    # Use exercise_example.py for reference
-    pass
+    # Parameters
+    parameter_set = [
+        SimulationParameters(
+            duration=10,  # Simulation duration in [s]
+            timestep=timestep,  # Simulation timestep in [s]
+            spawn_position=[0, 0, 0.1],  # Robot position in [m]
+            spawn_orientation=[0, 0, 0],  # Orientation in Euler angles [rad]
+            drive=drive,  # An example of parameter part of the grid search
+            amplitudes=[1, 2, 3],  
+            phase_lag_body=phase_lag_body, 
+            turn=0
+        )
+        # drive needed to be in walking mode
+        for drive in np.linspace(1, 2.9, 5) 
+
+        # phase lag implemented as in Fig.6 of "Salamandra Robotica II: An Amphibious Robot to Study Salamander-Like Swimming and Walking Gaits"
+        for phase_lag_body in np.linspace(-1, 1, 5) # [rad]
+    ]
+
+    # Grid search
+    os.makedirs('./logs/ex_2a/', exist_ok=True)
+    for simulation_i, sim_parameters in enumerate(parameter_set):
+        filename = './logs/ex_2a/simulation_{}.{}'
+        sim, data = simulation(
+            sim_parameters=sim_parameters,  # Simulation parameters, see above
+            arena='water',  # Can also be 'land'
+            fast=True,  # For fast mode (not real-time)
+            headless=False,  # For headless mode (No GUI, could be faster)
+            record=False,  # Record video
+            record_path="videos/test_video_drive_" + \
+            str(simulation_i),  # video saving path
+            camera_id=2  # camera type: 0=top view, 1=front view, 2=side view,
+        )
+        # Log robot data
+        data.to_file(filename.format(simulation_i, 'h5'), sim.iteration)
+        # Log simulation parameters
+        with open(filename.format(simulation_i, 'pickle'), 'wb') as param_file:
+            pickle.dump(sim_parameters, param_file)
+    
     return
 
 
@@ -52,5 +126,5 @@ def exercise_test_swim(timestep):
 
 if __name__ == '__main__':
     exercise_2a_swim(timestep=1e-2)
-    exercise_2b_walk(timestep=1e-2)
+    # exercise_2b_walk(timestep=1e-2)
 
