@@ -7,6 +7,8 @@ from salamandra_simulation.simulation import simulation
 from simulation_parameters import SimulationParameters
 import farms_pylog as pylog
 
+"""""""""""""""""""""""""""""Questions"""""""""""""""""""""""""""""""""""""""
+# not sure about what are "amplitudes"
 
 def exercise_2a_swim(timestep):
     """[Project 1] Exercise 2a Swimming
@@ -25,15 +27,15 @@ def exercise_2a_swim(timestep):
             spawn_position=[0, 0, 0.1],  # Robot position in [m]
             spawn_orientation=[0, 0, 0],  # Orientation in Euler angles [rad]
             drive=drive,  # An example of parameter part of the grid search
-            amplitudes=[1, 2, 3],  
+            amplitudes=1,  
             phase_lag_body=phase_lag_body, 
             turn=0
         )
         # drive needed to be in swimming mode
-        for drive in np.linspace(3, 4.9, 5) 
+        for drive in np.linspace(3, 5, 10) 
 
         # phase lag implemented as in Fig.6 of "Salamandra Robotica II: An Amphibious Robot to Study Salamander-Like Swimming and Walking Gaits"
-        for phase_lag_body in np.linspace(-1, 1, 5) 
+        for phase_lag_body in np.linspace(-2*180/np.pi, 2*180/np.pi, 10) 
     ]
 
     # Grid search
@@ -63,7 +65,7 @@ def exercise_2b_walk(timestep):
     """[Project 1] Exercise 2a Walking
 
     In this exercise we need to implement walking for salamander robot.
-    Check exericse_example.py to see how to setup simulations.
+    Check exercise_example.py to see how to setup simulations.
 
     Run the simulations for different walking drives and phase lag between body
     oscillators.
@@ -76,24 +78,24 @@ def exercise_2b_walk(timestep):
             spawn_position=[0, 0, 0.1],  # Robot position in [m]
             spawn_orientation=[0, 0, 0],  # Orientation in Euler angles [rad]
             drive=drive,  # An example of parameter part of the grid search
-            amplitudes=[1, 2, 3],  
+            amplitudes=1,  
             phase_lag_body=phase_lag_body, 
             turn=0
         )
         # drive needed to be in walking mode
-        for drive in np.linspace(1, 2.9, 5) 
+        for drive in np.linspace(1, 3, 5) 
 
         # phase lag implemented as in Fig.6 of "Salamandra Robotica II: An Amphibious Robot to Study Salamander-Like Swimming and Walking Gaits"
-        for phase_lag_body in np.linspace(-1, 1, 5) # [rad]
+        for phase_lag_body in np.linspace(-2*180/np.pi, 2*180/np.pi, 5) # []
     ]
 
     # Grid search
-    os.makedirs('./logs/ex_2a/', exist_ok=True)
+    os.makedirs('./logs/ex_2b/', exist_ok=True)
     for simulation_i, sim_parameters in enumerate(parameter_set):
-        filename = './logs/ex_2a/simulation_{}.{}'
+        filename = './logs/ex_2b/simulation_{}.{}'
         sim, data = simulation(
             sim_parameters=sim_parameters,  # Simulation parameters, see above
-            arena='water',  # Can also be 'land'
+            arena='land',  # Can also be 'land'
             fast=True,  # For fast mode (not real-time)
             headless=True,  # For headless mode (No GUI, could be faster)
             record=False,  # Record video
@@ -126,5 +128,4 @@ def exercise_test_swim(timestep):
 
 if __name__ == '__main__':
     exercise_2a_swim(timestep=1e-2)
-    # exercise_2b_walk(timestep=1e-2)
-
+    exercise_2b_walk(timestep=1e-2)

@@ -27,19 +27,19 @@ def exercise_4a_transition(timestep):
     """
     # Use exercise_example.py for reference
     # Additional hints:
-    # sim_parameters = SimulationParameters(
-    #     ...,
-    #     spawn_position=[4, 0, 0.0],
-    #     spawn_orientation=[0, 0, np.pi],
-    # )
-    # _sim, _data = simulation(
-    #     sim_parameters=sim_parameters,
-    #     arena='amphibious',
-    #     fast=True,
-    #     record=True,
-    #     record_path='walk2swim',  # or swim2walk
-    # )
-    pass
+    sim_parameters = SimulationParameters(
+        duration=10,  # Simulation duration in [s]
+        timestep=timestep,  # Simulation timestep in [s],
+        spawn_position=[4, 0, 0.1],
+        spawn_orientation=[0, 0, np.pi]
+    )
+    _sim, _data = simulation(
+        sim_parameters=sim_parameters,
+        arena='amphibious',
+        fast=True,
+        record=True,
+        record_path='walk2swim',  # or swim2walk
+    )
     return
 
 

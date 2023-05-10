@@ -32,7 +32,7 @@ def plot_trajectory(link_data, label=None, color=None):
     plt.axis('equal')
     plt.grid(True)
 
-def plot_2d(results, labels, n_data=300, title='', log=False, cmap=None):
+def plot_2d(results, labels, n_data=300, title='', log=False, cmap='nipy_spectral'):
     """Plot result
 
     results - The results are given as a 2d array of dimensions [N, 3].
@@ -105,9 +105,6 @@ def compute_speed(links_positions, links_vel, nsteps_considered=200):
     for idx in range(time_idx):
         x = links_pos_xy[idx, :9, 0]
         y = links_pos_xy[idx, :9, 1]
-
-        # print(links_pos_xy[idx][0][:])
-        # print(links_pos_xy[idx][8][:])
         
         pheadtail = np.float64(links_pos_xy[idx][0])-np.float64(links_pos_xy[idx][8])  # head - tail
         pcom_xy = np.mean(links_pos_xy[idx, :9, :], axis=0)
@@ -141,19 +138,62 @@ def sum_torques(joints_data):
     """Compute sum of torques"""
     return np.sum(np.abs(joints_data[:, :]))
 
-
-def plot_ex_2a(num_it):
+def plot_ex_2(num_it):
     speed_fw = np.zeros(num_it)
     sum_of_torques = np.zeros(num_it)
     cost_of_transport = np.zeros(num_it) # à calculer
     drive = np.zeros(num_it)
     phase_lag_body = np.zeros(num_it)
     for sim_num in range(num_it):
-        filename = './logs/ex_2a/simulation_{}.{}'
+        filename = './logs/ex_2b/simulation_{}.{}'
         data = SalamandraData.from_file(filename.format(sim_num, 'h5'))
-        with open(filename.format(sim_num, 'pickle'), 'rb') as param_file:                         
-        # data = SalamandraData.from_file('./logs/ex_2a/simulation_0.h5')
-        # with open('./logs/ex_2a/simulation_0.pickle', 'rb') as param_file:
+        with open(filename.format(sim_num, 'pickle'), 'rb') as param_file:
+            parameters = pickle.load(param_file)
+        drive[sim_num] = parameters.drive 
+        phase_lag_body[sim_num] = parameters.phase_lag_body
+        links_positions = data.sensors.links.urdf_positions()
+        links_vel = data.sensors.links.com_lin_velocities()
+
+        speed_fw[sim_num], speed_lat = compute_speed(links_positions, links_vel, num_it)
+
+    # Plot data
+    print(drive)
+    print(phase_lag_body)
+    print(speed_fw)
+    results = np.array([drive, phase_lag_body, speed_fw]).T
+    plot_2d(results, ['drive', 'phase_lag_body', 'speed_fw'], num_it)
+
+def plot_ex_3a(num_it=25):
+    speed_fw = np.zeros(num_it)
+    drive = np.zeros(num_it)
+    phase_limb_body = np.zeros(num_it)
+    for sim_num in range(num_it):
+        filename = './logs/ex_3a/simulation_{}.{}'
+        data = SalamandraData.from_file(filename.format(sim_num, 'h5'))
+        with open(filename.format(sim_num, 'pickle'), 'rb') as param_file:     
+            parameters = pickle.load(param_file)
+        drive[sim_num] = parameters.drive 
+        phase_limb_body[sim_num] = parameters.limb_to_body_CPG_phi
+        links_positions = data.sensors.links.urdf_positions()
+        links_vel = data.sensors.links.com_lin_velocities()
+        joints_velocities = data.sensors.joints.velocities_all()
+        speed_fw[sim_num], speed_lat = compute_speed(links_positions, links_vel)
+
+    # Plot data
+    print(drive)
+    print(phase_limb_body)
+    print(speed_fw)
+    results = np.array([drive, phase_limb_body, speed_fw]).T
+    plot_2d(results, ['drive', 'phase_limb_body', 'speed_fw'], num_it)
+
+def plot_ex_3b(num_it=25):
+    speed_fw = np.zeros(num_it)
+    drive = np.zeros(num_it)
+    amplitudes = np.zeros(num_it)
+    for sim_num in range(num_it):
+        filename = './logs/ex_3b/simulation_{}.{}'
+        data = SalamandraData.from_file(filename.format(sim_num, 'h5'))
+        with open(filename.format(sim_num, 'pickle'), 'rb') as param_file:     
             parameters = pickle.load(param_file)
         timestep = data.timestep
         n_iterations = np.shape(data.sensors.links.array)[0]
@@ -165,7 +205,7 @@ def plot_ex_2a(num_it):
         timestep = times[1] - times[0]
         drive[sim_num] = parameters.drive 
         # amplitudes = parameters.amplitudes
-        phase_lag_body[sim_num] = parameters.phase_lag_body
+        amplitudes[sim_num] = parameters.amplitudes
         # osc_phases = data.state.phases()
         # osc_amplitudes = data.state.amplitudes()
         links_positions = data.sensors.links.urdf_positions()
@@ -203,8 +243,9 @@ def plot_ex_2a(num_it):
 
 def main(plot=True):
     """Main"""
-    plot_ex_2a(num_it=25)
-
+    # plot_ex_2(num_it=100)
+    # plot_ex_3a(num_it=100)
+    plot_ex_3b(num_it=25)
     # Show plots
     if plot:
         plt.show()

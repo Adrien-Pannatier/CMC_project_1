@@ -115,7 +115,6 @@ class SalamandraNetwork:
         # Parameters
         self.robot_parameters = RobotParameters(sim_parameters)
         # Set initial state
-        # Replace your oscillator phases here
         self.state.set_phases(
             iteration=0,
             value=np.array([7.90153315, 7.73917846, 7.65291747, 7.29829689, 11.31822623, 10.93769451, 10.84641367, 10.68740331, 11.0431258,  10.88077111, 10.79451012, 10.43988954, 8.17663357,  7.79610186,  7.70482101,  7.54581065,  4.3889223,  7.53051495, 7.53051496,  4.3889223]), # [ph_0, 2*ph_0, 3*ph_0, 4*ph_0, 5*ph_0, 6*ph_0, 7*ph_0, 8*ph_0, -ph_0, -2*ph_0, -3*ph_0, -4*ph_0, -5*ph_0, -6*ph_0, -7*ph_0, -8*ph_0, np.pi, np.pi, np.pi, np.pi]

@@ -18,8 +18,43 @@ def exercise_3a_coordination(timestep):
     and leg oscillators.
 
     """
-    # Use exercise_example.py for reference
-    pass
+    # Parameters
+    parameter_set = [
+        SimulationParameters(
+            duration=10,  # Simulation duration in [s]
+            timestep=timestep,  # Simulation timestep in [s]
+            spawn_position=[0, 0, 0.1],  # Robot position in [m]
+            spawn_orientation=[0, 0, 0],  # Orientation in Euler angles [rad]
+            drive=drive,  # An example of parameter part of the grid search
+            amplitudes=1,
+            turn=0,
+            limb_to_body_CPG_phi = limb_to_body_CPG_phi
+        )
+        # drive needed to be in walking mode
+        for drive in np.linspace(1, 3, 10) 
+
+        for limb_to_body_CPG_phi in np.linspace(-np.pi, np.pi, 10)
+    ]
+
+    # Grid search
+    os.makedirs('./logs/ex_3a/', exist_ok=True)
+    for simulation_i, sim_parameters in enumerate(parameter_set):
+        filename = './logs/ex_3a/simulation_{}.{}'
+        sim, data = simulation(
+            sim_parameters=sim_parameters,  # Simulation parameters, see above
+            arena='land',  # Can also be 'land'
+            fast=True,  # For fast mode (not real-time)
+            headless=True,  # For headless mode (No GUI, could be faster)
+            record=False,  # Record video
+            record_path="videos/test_video_drive_" + \
+            str(simulation_i),  # video saving path
+            camera_id=2  # camera type: 0=top view, 1=front view, 2=side view,
+        )
+        # Log robot data
+        data.to_file(filename.format(simulation_i, 'h5'), sim.iteration)
+        # Log simulation parameters
+        with open(filename.format(simulation_i, 'pickle'), 'wb') as param_file:
+            pickle.dump(sim_parameters, param_file)
     return
 
 
@@ -31,12 +66,46 @@ def exercise_3b_coordination(timestep):
     Run the simulations for different walking drives and body amplitude.
 
     """
-    # Use exercise_example.py for reference
-    pass
+    # Parameters
+    parameter_set = [
+        SimulationParameters(
+            duration=10,  # Simulation duration in [s]
+            timestep=timestep,  # Simulation timestep in [s]
+            spawn_position=[0, 0, 0.1],  # Robot position in [m]
+            spawn_orientation=[0, 0, 0],  # Orientation in Euler angles [rad]
+            drive=drive,  # An example of parameter part of the grid search
+            amplitudes=amplitudes,
+            turn=0,
+        )
+        # drive needed to be in walking mode
+        for drive in np.linspace(1, 3, 5) 
+
+        for amplitudes in np.linspace(1, 10, 5)
+    ]
+
+    # Grid search
+    os.makedirs('./logs/ex_3b/', exist_ok=True)
+    for simulation_i, sim_parameters in enumerate(parameter_set):
+        filename = './logs/ex_3b/simulation_{}.{}'
+        sim, data = simulation(
+            sim_parameters=sim_parameters,  # Simulation parameters, see above
+            arena='land',  # Can also be 'land'
+            fast=True,  # For fast mode (not real-time)
+            headless=True,  # For headless mode (No GUI, could be faster)
+            record=False,  # Record video
+            record_path="videos/test_video_drive_" + \
+            str(simulation_i),  # video saving path
+            camera_id=2  # camera type: 0=top view, 1=front view, 2=side view,
+        )
+        # Log robot data
+        data.to_file(filename.format(simulation_i, 'h5'), sim.iteration)
+        # Log simulation parameters
+        with open(filename.format(simulation_i, 'pickle'), 'wb') as param_file:
+            pickle.dump(sim_parameters, param_file)
     return
 
 
 if __name__ == '__main__':
-    exercise_3a_coordination(timestep=1e-2)
+    # exercise_3a_coordination(timestep=1e-2)
     exercise_3b_coordination(timestep=1e-2)
 
