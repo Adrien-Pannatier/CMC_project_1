@@ -44,7 +44,7 @@ def exercise_2a_swim(timestep):
             sim_parameters=sim_parameters,  # Simulation parameters, see above
             arena='water',  # Can also be 'land'
             fast=True,  # For fast mode (not real-time)
-            headless=False,  # For headless mode (No GUI, could be faster)
+            headless=True,  # For headless mode (No GUI, could be faster)
             record=False,  # Record video
             record_path="videos/test_video_drive_" + \
             str(simulation_i),  # video saving path
@@ -95,7 +95,7 @@ def exercise_2b_walk(timestep):
             sim_parameters=sim_parameters,  # Simulation parameters, see above
             arena='water',  # Can also be 'land'
             fast=True,  # For fast mode (not real-time)
-            headless=False,  # For headless mode (No GUI, could be faster)
+            headless=True,  # For headless mode (No GUI, could be faster)
             record=False,  # Record video
             record_path="videos/test_video_drive_" + \
             str(simulation_i),  # video saving path
