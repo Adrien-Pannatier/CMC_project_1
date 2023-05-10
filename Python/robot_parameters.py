@@ -81,9 +81,6 @@ class RobotParameters(dict):
     def set_der_phases(self, der_phases):
         self.der_phases = der_phases
 
-    # def get_der_phases(self):
-    #     return self.der_phases
-
     def set_frequencies(self, parameters):
         # need two sets of frequencies : for the body and for the limb
         if (parameters.ldlow <= parameters.drive <= parameters.ldhigh):
