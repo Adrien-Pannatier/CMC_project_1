@@ -44,6 +44,7 @@ class SimulationParameters:
         self.ldlow  = 1
         self.ldhigh = 3
         self.drive = 0
+        self.state = None
         # Feel free to add more parameters 
 
         # Disruptions

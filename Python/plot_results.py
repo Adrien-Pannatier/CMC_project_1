@@ -140,7 +140,6 @@ def sum_torques(joints_data):
 
 def plot_ex_2(num_it):
     speed_fw = np.zeros(num_it)
-    sum_of_torques = np.zeros(num_it)
     cost_of_transport = np.zeros(num_it) # à calculer
     drive = np.zeros(num_it)
     phase_lag_body = np.zeros(num_it)
@@ -165,6 +164,7 @@ def plot_ex_2(num_it):
 
 def plot_ex_3a(num_it=25):
     speed_fw = np.zeros(num_it)
+    sum_of_torques = np.zeros(num_it)
     drive = np.zeros(num_it)
     phase_limb_body = np.zeros(num_it)
     for sim_num in range(num_it):

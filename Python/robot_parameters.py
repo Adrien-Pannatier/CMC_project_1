@@ -2,7 +2,7 @@
 
 import numpy as np
 from farms_core import pylog
-
+from simulation_parameters import SimulationParameters
 
 class RobotParameters(dict):
     """Robot parameters"""
@@ -32,7 +32,6 @@ class RobotParameters(dict):
         self.nominal_amplitudes = np.zeros(self.n_oscillators)
         self.feedback_gains_swim = np.zeros(self.n_oscillators)
         self.feedback_gains_walk = np.zeros(self.n_oscillators)
-        
         self.der_phases = np.zeros(self.n_oscillators)
 
         # gains for final motor output
@@ -45,11 +44,13 @@ class RobotParameters(dict):
 
         self.update(parameters)
 
+        self.state = parameters.state
+
     def update(self, parameters):
         """Update network from parameters"""
         self.set_frequencies(parameters)  # f_i
-        self.set_coupling_weights_and_phase_bias(parameters)  # w_ij
-        self.set_amplitudes_rate(parameters)  # a_i
+        # self.set_coupling_weights_and_phase_bias(parameters)  # w_ij
+        # self.set_amplitudes_rate(parameters)  # a_i
         self.set_nominal_amplitudes(parameters)  # R_i
 
     def step(self, iteration, salamandra_data):
@@ -58,7 +59,7 @@ class RobotParameters(dict):
         Parameters
         ----------
 
-        salamanra_data: salamandra_simulation/data.py::SalamandraData
+        salamandra_data: salamandra_simulation/data.py::SalamandraData
             Contains the robot data, including network and sensors.
 
         gps (within the method): Numpy array of shape [9x3]
@@ -71,9 +72,25 @@ class RobotParameters(dict):
         gps = np.array(
             salamandra_data.sensors.links.urdf_positions()[iteration, :9],
         )
-        # print("GPGS: {}".format(gps[4, 0]))
-        # print("drive: {}".format(self.sim_parameters.drive))
 
+     
+        x_pos = gps[4, 0]
+        
+        if x_pos > 2.7 and self.state == 'ground':
+            # change the simulation parameters
+            self.update(SimulationParameters(drive = 4.5,))
+            self.state == 'water'
+        elif x_pos < 2.7 and self.state == 'water':
+            self.update(SimulationParameters(drive = 2.5,))
+            self.state == 'ground'
+        
+
+        assert iteration >= 0
+        print("GPGS: {}".format(gps[4, 0]))
+        
+        # self.drive = 4.9
+        # print(dir(salamandra_data))
+        
 
     def get_parameters(self):
         return self.freqs, self.coupling_weights, self.phase_bias, self.rates, self.nominal_amplitudes
@@ -83,6 +100,7 @@ class RobotParameters(dict):
 
     def set_frequencies(self, parameters):
         # need two sets of frequencies : for the body and for the limb
+        print("drive: {}".format(parameters.drive))
         if (parameters.ldlow <= parameters.drive <= parameters.ldhigh):
             freq_limb = parameters.lcv1 * parameters.drive + parameters.lcv0
             self.freqs[16:20] = freq_limb

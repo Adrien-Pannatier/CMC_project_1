@@ -32,10 +32,10 @@ def exercise_2a_swim(timestep):
             turn=0
         )
         # drive needed to be in swimming mode
-        for drive in np.linspace(3, 5, 10) 
+        for drive in np.linspace(3, 5, 5) 
 
         # phase lag implemented as in Fig.6 of "Salamandra Robotica II: An Amphibious Robot to Study Salamander-Like Swimming and Walking Gaits"
-        for phase_lag_body in np.linspace(-2*180/np.pi, 2*180/np.pi, 10) 
+        for phase_lag_body in np.linspace(-2*180/np.pi, 2*180/np.pi, 5) 
     ]
 
     # Grid search
