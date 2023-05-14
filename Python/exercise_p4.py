@@ -40,8 +40,6 @@ def exercise_4a_transition(timestep):
             drive = 4.9,
             spawn_position=[4,0,0.1],
             spawn_orientation=[0,0,-np.pi/2],
-            amplitudes=1,  
-            phase_lag_body=0, 
             state = 'water'
         )]
 

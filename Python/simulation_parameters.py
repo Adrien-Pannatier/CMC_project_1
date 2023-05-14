@@ -27,6 +27,7 @@ class SimulationParameters:
         self.limb_to_body_CPG_phi = np.pi
         self.within_limb_CPG_phi = np.pi
         self.amplitude_factor = 1
+        self.walk_backwards = False
         self.conv_fac = 20
         self.bcv1   = 0.2
         self.bcv0   = 0.3
@@ -45,6 +46,8 @@ class SimulationParameters:
         self.ldlow  = 1
         self.ldhigh = 3
         self.drive = 0
+        self.drive_factor_left = 1 #modified for turning exercise, implements a differential drive
+        self.drive_factor_right = 1
         self.state = None
         # Feel free to add more parameters 
 

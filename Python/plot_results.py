@@ -160,7 +160,7 @@ def plot_ex_2a(num_it):
     print(phase_lag_body)
     print(speed_fw)
     results = np.array([drive, phase_lag_body, speed_fw]).T
-    plot_2d(results, ['drive', 'downward body phase lag [rad]', 'forward speed [m/s]'], num_it)
+    plot_2d(results, ['drive', 'downward body phase lag [rad]', 'forward speed [m/s]'], n_data=num_it, title='Effect of body phase lag and drive on swimming speed')
 
 
 def plot_ex_2b(num_it):
@@ -185,7 +185,7 @@ def plot_ex_2b(num_it):
     print(phase_lag_body)
     print(speed_fw)
     results = np.array([drive, phase_lag_body, speed_fw]).T
-    plot_2d(results, ['drive', 'downward body phase lag [rad]', 'forward speed [m/s]'], num_it)
+    plot_2d(results, ['drive', 'downward body phase lag [rad]', 'forward speed [m/s]'], n_data=num_it, title='Effect of body phase lag and drive on walking speed')
 
 
 def plot_ex_3a(num_it=25):
@@ -220,31 +220,31 @@ def plot_ex_3b(num_it=25):
         data = SalamandraData.from_file(filename.format(sim_num, 'h5'))
         with open(filename.format(sim_num, 'pickle'), 'rb') as param_file:     
             parameters = pickle.load(param_file)
-        # timestep = data.timestep
-        # n_iterations = np.shape(data.sensors.links.array)[0]
-        # times = np.arange(
-        #     start=0,
-        #     stop=timestep*n_iterations,
-        #     step=timestep,
-        # )
-        # timestep = times[1] - times[0]
+
         drive[sim_num] = parameters.drive 
+        # print(data.state.amplitudes()[900][10])
+        amplitudes[sim_num] = data.state.amplitudes()[500][10]
+        # amplitudes[sim_num] = osc_amplitude
         # amplitudes[sim_num] = parameters.amplitude_factor*(parameters.bcR1 * parameters.drive + parameters.bcR0)
-        amplitudes[sim_num] = parameters.amplitude_factor
+        # amplitudes[sim_num] = parameters.amplitude_factor
         links_positions = data.sensors.links.urdf_positions()
         links_vel = data.sensors.links.com_lin_velocities()
         speed_fw[sim_num], speed_lat = compute_speed(links_positions, links_vel)
 
+    print(drive)
+    print(amplitudes)
+    print(speed_fw)
+    print(np.shape(np.array([drive, amplitudes, speed_fw])))
     results = np.array([drive, amplitudes, speed_fw]).T
     plt.figure("Nom_amplitude_drive_to_speed")
-    plot_2d(results, ['drive', 'nominal amplitude', 'speed_fw'], title='Effects of drive and phase lag on speed')
+    plot_2d(results, ['drive', 'oscillator amplitude', 'forward speed'], n_data=num_it, title='Effects of drive and oscillator amplitudes on speed')
     
 def main(plot=True):
     """Main"""
     # plot_ex_2a(num_it=100)
     # plot_ex_2b(num_it=100)
     # plot_ex_3a(num_it=100)
-    plot_ex_3b(num_it=100)
+    plot_ex_3b(num_it=25)
     # Show plots
     if plot:
         plt.show()

@@ -38,8 +38,6 @@ class RobotParameters(dict):
         self.position_body_gain = parameters.position_body_gain
         self.position_limb_gain = parameters.position_limb_gain
 
-        self.amplitude_factor = 1
-
         self.set_coupling_weights_and_phase_bias(parameters)
 
         self.set_amplitudes_rate(parameters)
@@ -51,8 +49,6 @@ class RobotParameters(dict):
     def update(self, parameters):
         """Update network from parameters"""
         self.set_frequencies(parameters)  # f_i
-        # self.set_coupling_weights_and_phase_bias(parameters)  # w_ij
-        # self.set_amplitudes_rate(parameters)  # a_i
         self.set_nominal_amplitudes(parameters)  # R_i
 
     def step(self, iteration, salamandra_data):
@@ -104,14 +100,20 @@ class RobotParameters(dict):
         # need two sets of frequencies : for the body and for the limb
         # print("drive: {}".format(parameters.drive))
         if (parameters.ldlow <= parameters.drive <= parameters.ldhigh):
-            freq_limb = parameters.lcv1 * parameters.drive + parameters.lcv0
-            self.freqs[16:20] = freq_limb
+            freq_limb_l = parameters.lcv1 * parameters.drive_factor_left * parameters.drive + parameters.lcv0
+            self.freqs[16] = freq_limb_l
+            self.freqs[18] = freq_limb_l
+            freq_limb_r = parameters.lcv1 * parameters.drive_factor_right * parameters.drive + parameters.lcv0
+            self.freqs[17] = freq_limb_r
+            self.freqs[19] = freq_limb_r
         else:
             self.freqs[16:20] = parameters.lvsat
             
         if (parameters.bdlow <= parameters.drive <= parameters.bdhigh):
-            freq_body = parameters.bcv1 * parameters.drive + parameters.bcv0
-            self.freqs[:16] = freq_body
+            freq_body_l = parameters.bcv1 * parameters.drive_factor_left * parameters.drive + parameters.bcv0
+            self.freqs[:8] = freq_body_l
+            freq_body_r = parameters.bcv1 * parameters.drive_factor_right * parameters.drive + parameters.bcv0
+            self.freqs[8:16] = freq_body_r
         else:
             self.freqs[:16] = parameters.bvsat
 
@@ -152,10 +154,19 @@ class RobotParameters(dict):
         # within the limb CPG
         for i in range(self.n_oscillators - self.n_oscillators_legs, self.n_oscillators):
             for j in range(self.n_oscillators - self.n_oscillators_legs, self.n_oscillators):
-                    if (i==j) or (i+j==35): # for no diagonal weight
-                        continue  
+                if (i==j) or (i+j==35): # for no diagonal weight
+                    continue  
+                # self.coupling_weights[i, j] = parameters.within_limb_CPG_w
+                # self.phase_bias[i, j] = parameters.within_limb_CPG_phi
+                if ((i + j) == 33) or ((i + j) == 37):
                     self.coupling_weights[i, j] = parameters.within_limb_CPG_w
                     self.phase_bias[i, j] = parameters.within_limb_CPG_phi
+                if ((i + j) == 34) or ((i + j) == 36):
+                    self.coupling_weights[i, j] = parameters.within_limb_CPG_w
+                    if (parameters.walk_backwards == True):
+                        self.phase_bias[i, j] = -parameters.within_limb_CPG_phi/2
+                    else:
+                        self.phase_bias[i, j] = parameters.within_limb_CPG_phi
 
     def set_amplitudes_rate(self, parameters):
         self.rates[:] = parameters.conv_fac
@@ -163,13 +174,19 @@ class RobotParameters(dict):
     def set_nominal_amplitudes(self, parameters):
         # need two set of amplitude rates : for the body and for the limb
         if (parameters.ldlow <= parameters.drive <= parameters.ldhigh):
-            nom_amp_limb = self.amplitude_factor*(parameters.lcR1 * parameters.drive + parameters.lcR0)
-            self.nominal_amplitudes[16:20] = nom_amp_limb
+            nom_amp_limb_l = parameters.lcR1 * parameters.drive_factor_left * parameters.drive + parameters.lcR0
+            self.nominal_amplitudes[16] = nom_amp_limb_l
+            self.nominal_amplitudes[18] = nom_amp_limb_l
+            nom_amp_limb_r = parameters.lcR1 * parameters.drive_factor_right * parameters.drive + parameters.lcR0
+            self.nominal_amplitudes[17] = nom_amp_limb_r
+            self.nominal_amplitudes[19] = nom_amp_limb_r
         else:
             self.nominal_amplitudes[16:20] = parameters.lRsat
 
         if (parameters.bdlow <= parameters.drive <= parameters.bdhigh):
-            nom_amp_body = self.amplitude_factor*(parameters.bcR1 * parameters.drive + parameters.bcR0)
-            self.nominal_amplitudes[:16] = nom_amp_body
+            nom_amp_body_l = parameters.amplitude_factor*(parameters.bcR1 * parameters.drive_factor_left * parameters.drive + parameters.bcR0)
+            self.nominal_amplitudes[:8] = nom_amp_body_l
+            nom_amp_body_r = parameters.amplitude_factor*(parameters.bcR1 * parameters.drive_factor_right * parameters.drive + parameters.bcR0)
+            self.nominal_amplitudes[8:16] = nom_amp_body_r
         else:
             self.nominal_amplitudes[:16] = parameters.bRsat

@@ -75,9 +75,9 @@ def exercise_3b_coordination(timestep):
             amplitude_factor=amplitude_factor # factor multiplying the affine equation of the nominal amplitude for the body
         )
         # drive needed to be in walking mode
-        for drive in np.linspace(1, 3, 10) 
+        for drive in np.linspace(1, 3, 5) 
 
-        for amplitude_factor in np.linspace(0, 10, 10)
+        for amplitude_factor in np.linspace(0.1, 5, 5)
     ]
 
     # Grid search
