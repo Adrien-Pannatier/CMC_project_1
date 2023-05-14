@@ -106,16 +106,27 @@ def run_network(duration, update=True, drive=0, timestep=1e-2):
     # axes[2].legend(loc='upper left')
     # plt.figure()
     # plt.subplot(411)
-    for i in range(8):
-        axes[0].plot(times,outputs_log[:, i]-i*np.pi/3)
+    for i in range(4):
+        axes[0].plot(times,outputs_log[:, i]-i*np.pi/3, 'steelblue')
+    for i in range(4, 8):
+        axes[0].plot(times,outputs_log[:, i]-i*np.pi/3, 'mediumseagreen')
         #, label="body {num}".format(num =(i+1))
+    axes[0].set_yticklabels([])
+    axes[0].text(-1.0, -2.5, 'Trunk', rotation = "vertical", bbox=dict(facecolor='white', edgecolor='black'), fontsize=7)
+    axes[0].text(-1.0, -6.3, 'Tail', rotation = "vertical", bbox=dict(facecolor='white', edgecolor='black'), fontsize=7)
+    axes[0].annotate('', xy=(40, 0), xycoords='data', xytext=(40, -1), textcoords='data', arrowprops={'arrowstyle': '-'})
+    axes[0].text(40.3, -0.5, 'π/3', rotation = "horizontal", fontsize=7)
     axes[0].set_ylabel("x Body")
     # axes[0].legend(loc='upper left')
     #limb output command q
     # plt.subplot(412)
-    for i in range(8):
-        axes[1].plot(times,outputs_log[:, i+8]-i*np.pi/3)
-        #, label="limb {num}".format(num =(i+1))
+    axes[1].set_yticklabels([])
+    axes[1].plot(times,outputs_log[:, 13], 'steelblue')
+    axes[1].plot(times,outputs_log[:, 15]-np.pi/3, 'mediumseagreen')
+    axes[1].annotate('', xy=(40, 0), xycoords='data', xytext=(40, -1), textcoords='data', arrowprops={'arrowstyle': '<|-|>'})
+    axes[1].text(-1, 0, 'x14', rotation = "horizontal", fontsize=7)
+    axes[1].text(-1, -1, 'x16', rotation = "horizontal", fontsize=7)
+    axes[1].text(40.6, -0.5, 'π/3', rotation = "horizontal", fontsize=7)
     axes[1].set_ylabel("x Limb")
     # axes[1].legend(loc='upper left')
 
@@ -124,7 +135,7 @@ def run_network(duration, update=True, drive=0, timestep=1e-2):
     for i in range(20):
         axes[2].plot(times,freqs_osc_log[:, i])
     axes[2].set_ylabel("Freq [Hz]")
-    axes[2].set_ylim([0.1, 1.5])
+    axes[2].set_ylim([-0.05, 1.5])
     # axes[2].legend(loc='upper left')
 
     # drive d
@@ -133,9 +144,9 @@ def run_network(duration, update=True, drive=0, timestep=1e-2):
     swim_switch = np.ones(len(times)) * 3
     end_switch = np.ones(len(times)) * 5
     axes[3].plot(times,drive_array, 'k-')
-    axes[3].plot(times,walk_switch,'y--')
-    axes[3].plot(times,swim_switch,'y--')
-    axes[3].plot(times,end_switch,'y--')
+    axes[3].plot(times,walk_switch,linestyle = 'solid', color='darksalmon')
+    axes[3].plot(times,swim_switch,linestyle = 'solid', color='darksalmon')
+    axes[3].plot(times,end_switch,linestyle = 'solid', color='darksalmon')
     axes[3].set_ylabel("Drive")
     axes[3].set_xlabel("Time [s]")
     axes[3].legend(loc='upper left')
@@ -148,15 +159,20 @@ def run_network(duration, update=True, drive=0, timestep=1e-2):
 
     #frequencies
     # plt.subplot(211)
-    for i in range(20):
-        axes[0].plot(drive_array,freqs_log[:, i])
+    for i in range(16):
+        axes[0].plot(drive_array,freqs_log[:, i], 'k-')
+    for i in range(16, 20):
+        axes[0].plot(drive_array,freqs_log[:, i], linestyle= 'dotted', color = 'black')
     axes[0].set_ylabel("v [Hz]")
     
     # plt.subplot(212)
-    for i in range(20):
-        axes[1].plot(drive_array,nom_amp_log[:, i])
+    for i in range(16):
+        axes[1].plot(drive_array,nom_amp_log[:, i], 'k-')
+    for i in range(16, 20):
+        axes[1].plot(drive_array,nom_amp_log[:, i], linestyle= 'dotted', color = 'black')
     axes[1].set_ylabel("R")
     axes[1].set_xlabel("Drive")
+
     return
 
 

@@ -37,7 +37,7 @@ def exercise_4a_transition(timestep):
         SimulationParameters(
             timestep = timestep,
             duration=60,
-            drive = 4.9, #initial drive
+            drive = 4.9,
             spawn_position=[4,0,0.1],
             spawn_orientation=[0,0,-np.pi/2],
             amplitudes=1,  
@@ -64,21 +64,6 @@ def exercise_4a_transition(timestep):
         # Log simulation parameters
         with open(filename.format(simulation_i, 'pickle'), 'wb') as param_file:
             pickle.dump(sim_parameters, param_file)
-    # Use exercise_example.py for reference
-    # Additional hints:
-    # sim_parameters = SimulationParameters(
-    #     ...,
-    #     spawn_position=[4, 0, 0.0],
-    #     spawn_orientation=[0, 0, np.pi],
-    # )
-    # _sim, _data = simulation(
-    #     sim_parameters=sim_parameters,
-    #     arena='amphibious',
-    #     fast=True,
-    #     record=True,
-    #     record_path='walk2swim',  # or swim2walk
-    # )
-    pass
     return
 
 

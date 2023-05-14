@@ -26,16 +26,14 @@ def exercise_2a_swim(timestep):
             timestep=timestep,  # Simulation timestep in [s]
             spawn_position=[0, 0, 0.1],  # Robot position in [m]
             spawn_orientation=[0, 0, 0],  # Orientation in Euler angles [rad]
-            drive=drive,  # An example of parameter part of the grid search
-            amplitudes=1,  
-            phase_lag_body=phase_lag_body, 
-            turn=0
+            drive=drive,  
+            downward_body_CPG_phi=downward_body_CPG_phi
         )
         # drive needed to be in swimming mode
-        for drive in np.linspace(3, 5, 5) 
+        for drive in np.linspace(3, 5, 10) 
 
         # phase lag implemented as in Fig.6 of "Salamandra Robotica II: An Amphibious Robot to Study Salamander-Like Swimming and Walking Gaits"
-        for phase_lag_body in np.linspace(-2*180/np.pi, 2*180/np.pi, 5) 
+        for downward_body_CPG_phi in np.linspace(-np.pi, np.pi, 10) 
     ]
 
     # Grid search
@@ -77,16 +75,14 @@ def exercise_2b_walk(timestep):
             timestep=timestep,  # Simulation timestep in [s]
             spawn_position=[0, 0, 0.1],  # Robot position in [m]
             spawn_orientation=[0, 0, 0],  # Orientation in Euler angles [rad]
-            drive=drive,  # An example of parameter part of the grid search
-            amplitudes=1,  
-            phase_lag_body=phase_lag_body, 
-            turn=0
+            drive=drive,  
+            downward_body_CPG_phi=downward_body_CPG_phi
         )
         # drive needed to be in walking mode
-        for drive in np.linspace(1, 3, 5) 
+        for drive in np.linspace(1, 3, 10) 
 
         # phase lag implemented as in Fig.6 of "Salamandra Robotica II: An Amphibious Robot to Study Salamander-Like Swimming and Walking Gaits"
-        for phase_lag_body in np.linspace(-2*180/np.pi, 2*180/np.pi, 5) # []
+        for downward_body_CPG_phi in np.linspace(-np.pi, np.pi, 10) 
     ]
 
     # Grid search

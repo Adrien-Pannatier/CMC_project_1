@@ -138,18 +138,18 @@ def sum_torques(joints_data):
     """Compute sum of torques"""
     return np.sum(np.abs(joints_data[:, :]))
 
-def plot_ex_2(num_it):
+def plot_ex_2a(num_it):
     speed_fw = np.zeros(num_it)
     cost_of_transport = np.zeros(num_it) # à calculer
     drive = np.zeros(num_it)
     phase_lag_body = np.zeros(num_it)
     for sim_num in range(num_it):
-        filename = './logs/ex_2b/simulation_{}.{}'
+        filename = './logs/ex_2a/simulation_{}.{}'
         data = SalamandraData.from_file(filename.format(sim_num, 'h5'))
         with open(filename.format(sim_num, 'pickle'), 'rb') as param_file:
             parameters = pickle.load(param_file)
         drive[sim_num] = parameters.drive 
-        phase_lag_body[sim_num] = parameters.phase_lag_body
+        phase_lag_body[sim_num] = parameters.downward_body_CPG_phi
         links_positions = data.sensors.links.urdf_positions()
         links_vel = data.sensors.links.com_lin_velocities()
 
@@ -160,11 +160,36 @@ def plot_ex_2(num_it):
     print(phase_lag_body)
     print(speed_fw)
     results = np.array([drive, phase_lag_body, speed_fw]).T
-    plot_2d(results, ['drive', 'phase_lag_body', 'speed_fw'], num_it)
+    plot_2d(results, ['drive', 'downward body phase lag [rad]', 'forward speed [m/s]'], num_it)
+
+
+def plot_ex_2b(num_it):
+    speed_fw = np.zeros(num_it)
+    cost_of_transport = np.zeros(num_it) # à calculer
+    drive = np.zeros(num_it)
+    phase_lag_body = np.zeros(num_it)
+    for sim_num in range(num_it):
+        filename = './logs/ex_2b/simulation_{}.{}'
+        data = SalamandraData.from_file(filename.format(sim_num, 'h5'))
+        with open(filename.format(sim_num, 'pickle'), 'rb') as param_file:
+            parameters = pickle.load(param_file)
+        drive[sim_num] = parameters.drive 
+        phase_lag_body[sim_num] = parameters.downward_body_CPG_phi
+        links_positions = data.sensors.links.urdf_positions()
+        links_vel = data.sensors.links.com_lin_velocities()
+
+        speed_fw[sim_num], speed_lat = compute_speed(links_positions, links_vel, num_it)
+
+    # Plot data
+    print(drive)
+    print(phase_lag_body)
+    print(speed_fw)
+    results = np.array([drive, phase_lag_body, speed_fw]).T
+    plot_2d(results, ['drive', 'downward body phase lag [rad]', 'forward speed [m/s]'], num_it)
+
 
 def plot_ex_3a(num_it=25):
     speed_fw = np.zeros(num_it)
-    sum_of_torques = np.zeros(num_it)
     drive = np.zeros(num_it)
     phase_limb_body = np.zeros(num_it)
     for sim_num in range(num_it):
@@ -176,7 +201,6 @@ def plot_ex_3a(num_it=25):
         phase_limb_body[sim_num] = parameters.limb_to_body_CPG_phi
         links_positions = data.sensors.links.urdf_positions()
         links_vel = data.sensors.links.com_lin_velocities()
-        joints_velocities = data.sensors.joints.velocities_all()
         speed_fw[sim_num], speed_lat = compute_speed(links_positions, links_vel)
 
     # Plot data
@@ -184,7 +208,8 @@ def plot_ex_3a(num_it=25):
     print(phase_limb_body)
     print(speed_fw)
     results = np.array([drive, phase_limb_body, speed_fw]).T
-    plot_2d(results, ['drive', 'phase_limb_body', 'speed_fw'], num_it)
+    plt.figure("Phase_limbtobody_drive_to_speed")
+    plot_2d(results, ['drive', 'limb to body phase', 'speed_fw'], num_it)
 
 def plot_ex_3b(num_it=25):
     speed_fw = np.zeros(num_it)
@@ -195,57 +220,31 @@ def plot_ex_3b(num_it=25):
         data = SalamandraData.from_file(filename.format(sim_num, 'h5'))
         with open(filename.format(sim_num, 'pickle'), 'rb') as param_file:     
             parameters = pickle.load(param_file)
-        timestep = data.timestep
-        n_iterations = np.shape(data.sensors.links.array)[0]
-        times = np.arange(
-            start=0,
-            stop=timestep*n_iterations,
-            step=timestep,
-        )
-        timestep = times[1] - times[0]
+        # timestep = data.timestep
+        # n_iterations = np.shape(data.sensors.links.array)[0]
+        # times = np.arange(
+        #     start=0,
+        #     stop=timestep*n_iterations,
+        #     step=timestep,
+        # )
+        # timestep = times[1] - times[0]
         drive[sim_num] = parameters.drive 
-        # amplitudes = parameters.amplitudes
-        amplitudes[sim_num] = parameters.amplitudes
-        # osc_phases = data.state.phases()
-        # osc_amplitudes = data.state.amplitudes()
+        # amplitudes[sim_num] = parameters.amplitude_factor*(parameters.bcR1 * parameters.drive + parameters.bcR0)
+        amplitudes[sim_num] = parameters.amplitude_factor
         links_positions = data.sensors.links.urdf_positions()
         links_vel = data.sensors.links.com_lin_velocities()
-        head_positions = links_positions[:, 0, :]
-        tail_positions = links_positions[:, 8, :]
-        # joints_positions = data.sensors.joints.positions_all()
-        joints_velocities = data.sensors.joints.velocities_all()
-        joints_torques = data.sensors.joints.motor_torques_all()
         speed_fw[sim_num], speed_lat = compute_speed(links_positions, links_vel)
-        sum_of_torques[sim_num] = sum_torques(joints_torques)
 
-    # Notes:
-    # For the links arrays: positions[iteration, link_id, xyz]
-    # For the positions arrays: positions[iteration, xyz]
-    # For the joints arrays: positions[iteration, joint]
-
-    # Plot data
-    head_positions = np.asarray(head_positions)
-    tail_positions = np.asarray(tail_positions)
-    plt.figure('Positions')
-    plot_positions(times, head_positions)
-    plot_positions(times, tail_positions)
-    # plt.figure('Trajectory')
-    # plot_trajectory(head_positions),
-    # print(drive)
-    # print(phase_lag_body)
-    # print(speed_fw)
-    results = np.array([drive, phase_lag_body, speed_fw]).T
-    plt.figure("Phase_lag_drive_to_speed")
-    plot_2d(results, ['drive', 'phase_lag_body', 'speed_fw'], title='Effects of drive and phase lag on speed')
-    plt.figure("Phase_lag_drive_to_torque")
-    plot_2d(np.array([drive, phase_lag_body, sum_of_torques]).T, ['drive', 'phase_lag_body', 'sum_torque'], title='Effects of drive and phase lag on torque')
-
-
+    results = np.array([drive, amplitudes, speed_fw]).T
+    plt.figure("Nom_amplitude_drive_to_speed")
+    plot_2d(results, ['drive', 'nominal amplitude', 'speed_fw'], title='Effects of drive and phase lag on speed')
+    
 def main(plot=True):
     """Main"""
-    # plot_ex_2(num_it=100)
+    # plot_ex_2a(num_it=100)
+    # plot_ex_2b(num_it=100)
     # plot_ex_3a(num_it=100)
-    plot_ex_3b(num_it=25)
+    plot_ex_3b(num_it=100)
     # Show plots
     if plot:
         plt.show()

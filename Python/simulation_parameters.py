@@ -22,10 +22,11 @@ class SimulationParameters:
         self.limb_to_body_CPG_w = 30
         self.within_limb_CPG_w = 10
         self.downward_body_CPG_phi = -2*np.pi/self.n_body_joints
-        self.upward_body_CPG_phi = 2*np.pi/self.n_body_joints
+        self.upward_body_CPG_phi = -self.downward_body_CPG_phi
         self.contralateral_body_CPG_phi = np.pi
         self.limb_to_body_CPG_phi = np.pi
         self.within_limb_CPG_phi = np.pi
+        self.amplitude_factor = 1
         self.conv_fac = 20
         self.bcv1   = 0.2
         self.bcv0   = 0.3

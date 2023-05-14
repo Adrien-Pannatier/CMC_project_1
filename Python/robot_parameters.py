@@ -38,6 +38,8 @@ class RobotParameters(dict):
         self.position_body_gain = parameters.position_body_gain
         self.position_limb_gain = parameters.position_limb_gain
 
+        self.amplitude_factor = 1
+
         self.set_coupling_weights_and_phase_bias(parameters)
 
         self.set_amplitudes_rate(parameters)
@@ -86,7 +88,7 @@ class RobotParameters(dict):
         
 
         assert iteration >= 0
-        print("GPGS: {}".format(gps[4, 0]))
+        # print("GPGS: {}".format(gps[4, 0]))
         
         # self.drive = 4.9
         # print(dir(salamandra_data))
@@ -100,7 +102,7 @@ class RobotParameters(dict):
 
     def set_frequencies(self, parameters):
         # need two sets of frequencies : for the body and for the limb
-        print("drive: {}".format(parameters.drive))
+        # print("drive: {}".format(parameters.drive))
         if (parameters.ldlow <= parameters.drive <= parameters.ldhigh):
             freq_limb = parameters.lcv1 * parameters.drive + parameters.lcv0
             self.freqs[16:20] = freq_limb
@@ -135,23 +137,15 @@ class RobotParameters(dict):
                 if (i==j):
                     continue
                 if ((j==16)and(i<4)):
-                    # self.coupling_weights[i, j] = parameters.limb_to_body_CPG_w
-                    # self.phase_bias[i, j] = parameters.limb_to_body_CPG_phi
                     self.coupling_weights[j, i] = parameters.limb_to_body_CPG_w
                     self.phase_bias[j, i] = parameters.limb_to_body_CPG_phi
                 elif ((j==18)and(4<=i<=7)):
-                    # self.coupling_weights[i, j] = parameters.limb_to_body_CPG_w
-                    # self.phase_bias[i, j] = parameters.limb_to_body_CPG_phi
                     self.coupling_weights[j, i] = parameters.limb_to_body_CPG_w
                     self.phase_bias[j, i] = parameters.limb_to_body_CPG_phi
                 elif ((j==17)and(8<=i<=11)):
-                    # self.coupling_weights[i, j] = parameters.limb_to_body_CPG_w
-                    # self.phase_bias[i, j] = parameters.limb_to_body_CPG_phi
                     self.coupling_weights[j, i] = parameters.limb_to_body_CPG_w
                     self.phase_bias[j, i] = parameters.limb_to_body_CPG_phi
                 elif ((j==19)and(12<=i<=15)):
-                    # self.coupling_weights[i, j] = parameters.limb_to_body_CPG_w
-                    # self.phase_bias[i, j] = parameters.limb_to_body_CPG_phi
                     self.coupling_weights[j, i] = parameters.limb_to_body_CPG_w
                     self.phase_bias[j, i] = parameters.limb_to_body_CPG_phi
         
@@ -169,13 +163,13 @@ class RobotParameters(dict):
     def set_nominal_amplitudes(self, parameters):
         # need two set of amplitude rates : for the body and for the limb
         if (parameters.ldlow <= parameters.drive <= parameters.ldhigh):
-            nom_amp_limb = parameters.lcR1 * parameters.drive + parameters.lcR0
+            nom_amp_limb = self.amplitude_factor*(parameters.lcR1 * parameters.drive + parameters.lcR0)
             self.nominal_amplitudes[16:20] = nom_amp_limb
         else:
             self.nominal_amplitudes[16:20] = parameters.lRsat
 
         if (parameters.bdlow <= parameters.drive <= parameters.bdhigh):
-            nom_amp_body = parameters.bcR1 * parameters.drive + parameters.bcR0
+            nom_amp_body = self.amplitude_factor*(parameters.bcR1 * parameters.drive + parameters.bcR0)
             self.nominal_amplitudes[:16] = nom_amp_body
         else:
             self.nominal_amplitudes[:16] = parameters.bRsat
