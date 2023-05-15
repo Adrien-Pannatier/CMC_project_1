@@ -279,13 +279,33 @@ def plot_ex_3b(num_it=25):
     results = np.array([drive, amplitudes, speed_fw]).T
     plt.figure("Nom_amplitude_drive_to_speed")
     plot_2d(results, ['drive', 'amplitude factor', 'forward speed'], n_data=num_it, title='Effects of amplitude factor and drive on speed')
-    
+
+def plot_ex_4a():
+    filename = './logs/ex_4/simulation_w2s_{}.{}'
+    data = SalamandraData.from_file(filename.format('0', 'h5'))
+    links_positions = data.sensors.links.urdf_positions()
+    head_positions = links_positions[:, 0, :]
+    head_positions = np.asarray(head_positions)
+    plt.figure('Traj_w2s')
+    plot_trajectory(head_positions)  
+
+def plot_ex_4b():
+    filename = './logs/ex_4/simulation_s2w_{}.{}'
+    data = SalamandraData.from_file(filename.format('0', 'h5'))
+    links_positions = data.sensors.links.urdf_positions()
+    head_positions = links_positions[:, 0, :]
+    head_positions = np.asarray(head_positions)
+    plt.figure('Traj_s2w')
+    plot_trajectory(head_positions)  
+
 def main(plot=True):
     """Main"""
     # plot_ex_2a(num_it=100)
-    plot_ex_2b(num_it=100)
+    # plot_ex_2b(num_it=100)
     # plot_ex_3a(num_it=100)
     # plot_ex_3b(num_it=100)
+    plot_ex_4a()
+    plot_ex_4b()
     # Show plots
     if plot:
         plt.show()

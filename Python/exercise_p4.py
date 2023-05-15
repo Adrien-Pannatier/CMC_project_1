@@ -11,11 +11,7 @@ import farms_pylog as pylog
 WALK = 2.9
 SWIM = 4.9
 
-def on_ground():
-
-    return 0
-
-def exercise_4a_transition(timestep):
+def exercise_4a_transition_walk2swim(timestep):
     """[Project 1] 4a Transitions
 
     In this exerices, we will implement transitions.
@@ -36,8 +32,8 @@ def exercise_4a_transition(timestep):
     parameter_set = [
         SimulationParameters(
             timestep = timestep,
-            duration=60,
-            drive = 2.9,
+            duration=30,
+            drive = WALK,
             spawn_position=[0,0,0.1],
             spawn_orientation=[0,0,np.pi/2],
             state = 'ground'
@@ -46,14 +42,63 @@ def exercise_4a_transition(timestep):
     # Grid search
     os.makedirs('./logs/ex_4/', exist_ok=True)
     for simulation_i, sim_parameters in enumerate(parameter_set):
-        filename = './logs/example/simulation_{}.{}'
+        filename = './logs/ex_4/simulation_w2s_{}.{}'
         sim, data = simulation(
             sim_parameters=sim_parameters,  # Simulation parameters, see above
             arena='amphibious',  # Can also be 'land', give it a try!
             fast=True,  # For fast mode (not real-time)
-            headless=True,  # For headless mode (No GUI, could be faster)
+            headless=False,  # For headless mode (No GUI, could be faster)
             record=True,  # Record video
-            record_path='walk2swim',
+            record_path='ex_4/walk2swim',
+            # str(simulation_i),  # video saving path
+            camera_id=1  # camera type: 0=top view, 1=front view, 2=side view,
+        )
+        # Log robot data
+        data.to_file(filename.format(simulation_i, 'h5'), sim.iteration)
+        # Log simulation parameters
+        with open(filename.format(simulation_i, 'pickle'), 'wb') as param_file:
+            pickle.dump(sim_parameters, param_file)
+    return
+
+def exercise_4a_transition_swim2walk(timestep):
+    """[Project 1] 4a Transitions
+
+    In this exerices, we will implement transitions.
+    The salamander robot needs to perform swimming to walking
+    and walking to swimming transitions.
+
+    Hint:
+        - set the  arena to 'amphibious'
+        - use the sensor(gps) values to find the point where
+        the robot should transition 2.7 approximately
+        - simulation can be stopped/played in the middle
+        by pressing the space bar
+        - printing or debug mode of vscode can be used
+        to understand the sensor values
+
+    """
+        # Parameters
+    parameter_set = [
+        SimulationParameters(
+            timestep = timestep,
+            duration=30,
+            drive = SWIM,
+            spawn_position=[6,0,0.1],
+            spawn_orientation=[0,0,-np.pi/2],
+            state = 'water'
+        )]
+
+    # Grid search
+    os.makedirs('./logs/ex_4/', exist_ok=True)
+    for simulation_i, sim_parameters in enumerate(parameter_set):
+        filename = './logs/ex_4/simulation_s2w_{}.{}'
+        sim, data = simulation(
+            sim_parameters=sim_parameters,  # Simulation parameters, see above
+            arena='amphibious',  # Can also be 'land', give it a try!
+            fast=True,  # For fast mode (not real-time)
+            headless=False,  # For headless mode (No GUI, could be faster)
+            record=True,  # Record video
+            record_path='ex_4/swim2walk',
             # str(simulation_i),  # video saving path
             camera_id=1  # camera type: 0=top view, 1=front view, 2=side view,
         )
@@ -66,5 +111,6 @@ def exercise_4a_transition(timestep):
 
 
 if __name__ == '__main__':
-    exercise_4a_transition(timestep=1e-2)
+    # exercise_4a_transition_walk2swim(timestep=1e-2)
+    exercise_4a_transition_swim2walk(timestep=1e-2)
 
