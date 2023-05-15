@@ -130,7 +130,7 @@ def run_network(duration, update=True, drive=0, timestep=1e-2):
     axes[2].set_xticklabels([])
     axes[2].set_ylabel("Freq [Hz]")
     axes[2].set_ylim([-0.05, 1.5])
-    # axes[2].legend(loc='upper left')
+    axes[2].legend(loc='upper left')
 
     # drive d
     # plt.subplot(414)
@@ -146,7 +146,7 @@ def run_network(duration, update=True, drive=0, timestep=1e-2):
     axes[3].text(2.73, 1.93, "Walking", rotation = "horizontal")
     axes[3].text(35.7, 3.85, "Swimming", rotation = "horizontal")
     
-    f.legend()
+    # f.legend()
 
     f, axes = plt.subplots(2)
 
