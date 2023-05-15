@@ -37,22 +37,22 @@ def exercise_4a_transition(timestep):
         SimulationParameters(
             timestep = timestep,
             duration=60,
-            drive = 4.9,
-            spawn_position=[4,0,0.1],
-            spawn_orientation=[0,0,-np.pi/2],
-            state = 'water'
+            drive = 2.9,
+            spawn_position=[0,0,0.1],
+            spawn_orientation=[0,0,np.pi/2],
+            state = 'ground'
         )]
 
     # Grid search
-    os.makedirs('./logs/example/', exist_ok=True)
+    os.makedirs('./logs/ex_4/', exist_ok=True)
     for simulation_i, sim_parameters in enumerate(parameter_set):
         filename = './logs/example/simulation_{}.{}'
         sim, data = simulation(
             sim_parameters=sim_parameters,  # Simulation parameters, see above
             arena='amphibious',  # Can also be 'land', give it a try!
             fast=True,  # For fast mode (not real-time)
-            headless=False,  # For headless mode (No GUI, could be faster)
-            record=False,  # Record video
+            headless=True,  # For headless mode (No GUI, could be faster)
+            record=True,  # Record video
             record_path='walk2swim',
             # str(simulation_i),  # video saving path
             camera_id=1  # camera type: 0=top view, 1=front view, 2=side view,

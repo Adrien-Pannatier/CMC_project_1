@@ -81,14 +81,7 @@ class RobotParameters(dict):
         elif x_pos < 2.7 and self.state == 'water':
             self.update(SimulationParameters(drive = 2.5,))
             self.state == 'ground'
-        
-
         assert iteration >= 0
-        # print("GPGS: {}".format(gps[4, 0]))
-        
-        # self.drive = 4.9
-        # print(dir(salamandra_data))
-        
 
     def get_parameters(self):
         return self.freqs, self.coupling_weights, self.phase_bias, self.rates, self.nominal_amplitudes
@@ -97,8 +90,6 @@ class RobotParameters(dict):
         self.der_phases = der_phases
 
     def set_frequencies(self, parameters):
-        # need two sets of frequencies : for the body and for the limb
-        # print("drive: {}".format(parameters.drive))
         if (parameters.ldlow <= parameters.drive <= parameters.ldhigh):
             freq_limb_l = parameters.lcv1 * parameters.drive_factor_left * parameters.drive + parameters.lcv0
             self.freqs[16] = freq_limb_l
@@ -156,8 +147,6 @@ class RobotParameters(dict):
             for j in range(self.n_oscillators - self.n_oscillators_legs, self.n_oscillators):
                 if (i==j) or (i+j==35): # for no diagonal weight
                     continue  
-                # self.coupling_weights[i, j] = parameters.within_limb_CPG_w
-                # self.phase_bias[i, j] = parameters.within_limb_CPG_phi
                 if ((i + j) == 33) or ((i + j) == 37):
                     self.coupling_weights[i, j] = parameters.within_limb_CPG_w
                     self.phase_bias[i, j] = parameters.within_limb_CPG_phi

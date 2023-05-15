@@ -133,6 +133,41 @@ def compute_speed(links_positions, links_vel, nsteps_considered=200):
 
     return np.mean(speed_forward), np.mean(speed_lateral)
 
+def compute_cost_of_transport(data):
+    joints_velocities = data.sensors.joints.velocities_all()
+    joints_torques = data.sensors.joints.motor_torques_all()
+    timestep = data.timestep
+    # sum the velocieties for each joint, for each timestep
+    joints_velocities_summed = np.sum(np.abs(joints_velocities), axis=0)
+    joints_torques_summed = np.sum(np.abs(joints_torques), axis=0)
+    cost_of_transport = np.abs(np.dot(joints_velocities_summed,joints_torques_summed)*timestep)
+    print(cost_of_transport)
+    return cost_of_transport
+
+
+# timestep = data.timestep
+# n_iterations = np.shape(data.sensors.links.array)[0]
+# times = np.arange(
+#     start=0,
+#     stop=timestep*n_iterations,
+#     step=timestep,
+# )
+# timestep = times[1] - times[0]
+# # amplitudes = parameters.amplitudes
+#         amplitudes[sim_num] = parameters.amplitudes
+#         # osc_phases = data.state.phases()
+#         # osc_amplitudes = data.state.amplitudes()
+#         # amplitudes[sim_num] = parameters.amplitude_factor*(parameters.bcR1 * parameters.drive + parameters.bcR0)
+#         amplitudes[sim_num] = parameters.amplitude_factor
+#         links_positions = data.sensors.links.urdf_positions()
+#         links_vel = data.sensors.links.com_lin_velocities()
+#         head_positions = links_positions[:, 0, :]
+#         tail_positions = links_positions[:, 8, :]
+#         # joints_positions = data.sensors.joints.positions_all()
+#         joints_velocities = data.sensors.joints.velocities_all()
+#         joints_torques = data.sensors.joints.motor_torques_all()
+#         speed_fw[sim_num], speed_lat = compute_speed(links_positions, links_vel)
+#         sum_of_torques[sim_num] = sum_torques(joints_torques)
 
 def sum_torques(joints_data):
     """Compute sum of torques"""
@@ -177,16 +212,21 @@ def plot_ex_2b(num_it):
         phase_lag_body[sim_num] = parameters.downward_body_CPG_phi
         links_positions = data.sensors.links.urdf_positions()
         links_vel = data.sensors.links.com_lin_velocities()
+        cost_of_transport[sim_num] = compute_cost_of_transport(data)
+
 
         speed_fw[sim_num], speed_lat = compute_speed(links_positions, links_vel, num_it)
 
     # Plot data
-    print(drive)
-    print(phase_lag_body)
-    print(speed_fw)
+    # print(drive)
+    # print(phase_lag_body)
+    # print(speed_fw)
     results = np.array([drive, phase_lag_body, speed_fw]).T
+    plt.figure("phase_bias_and_drive_effect_to_speed")
     plot_2d(results, ['drive', 'downward body phase lag [rad]', 'forward speed [m/s]'], n_data=num_it, title='Effect of body phase lag and drive on walking speed')
 
+    plt.figure("phase_bias_and_drive_effect_to_transport")
+    plot_2d(np.array([drive, phase_lag_body, cost_of_transport]).T, ['drive', 'downward body phase lag [rad]', 'cost of transport [J]'], n_data=num_it, title='Effect of body phase lag and drive on transport cost')
 
 def plot_ex_3a(num_it=25):
     speed_fw = np.zeros(num_it)
@@ -223,6 +263,7 @@ def plot_ex_3b(num_it=25):
 
         drive[sim_num] = parameters.drive 
         # print(data.state.amplitudes()[900][10])
+        # amplitudes[sim_num] = parameters.amplitude_factor
         amplitudes[sim_num] = data.state.amplitudes()[500][10]
         # amplitudes[sim_num] = osc_amplitude
         # amplitudes[sim_num] = parameters.amplitude_factor*(parameters.bcR1 * parameters.drive + parameters.bcR0)
@@ -237,14 +278,14 @@ def plot_ex_3b(num_it=25):
     print(np.shape(np.array([drive, amplitudes, speed_fw])))
     results = np.array([drive, amplitudes, speed_fw]).T
     plt.figure("Nom_amplitude_drive_to_speed")
-    plot_2d(results, ['drive', 'oscillator amplitude', 'forward speed'], n_data=num_it, title='Effects of drive and oscillator amplitudes on speed')
+    plot_2d(results, ['drive', 'amplitude factor', 'forward speed'], n_data=num_it, title='Effects of amplitude factor and drive on speed')
     
 def main(plot=True):
     """Main"""
     # plot_ex_2a(num_it=100)
-    # plot_ex_2b(num_it=100)
+    plot_ex_2b(num_it=100)
     # plot_ex_3a(num_it=100)
-    plot_ex_3b(num_it=25)
+    # plot_ex_3b(num_it=100)
     # Show plots
     if plot:
         plt.show()
