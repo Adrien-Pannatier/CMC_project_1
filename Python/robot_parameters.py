@@ -4,6 +4,12 @@ import numpy as np
 from farms_core import pylog
 from simulation_parameters import SimulationParameters
 
+WALK = 2.6
+WALK_BODY_PHI = -2.51327
+WALK_BODY_LIMB_PHI = 3
+SWIM = 3.25
+SWIM_PHI = -2.51327
+
 class RobotParameters(dict):
     """Robot parameters"""
 
@@ -76,10 +82,10 @@ class RobotParameters(dict):
         
         if x_pos > 2.7 and self.state == 'ground':
             # change the simulation parameters
-            self.update(SimulationParameters(drive = 4.5,))
+            self.update(SimulationParameters(drive = SWIM, downward_body_CPG_phi = SWIM_PHI,))
             self.state == 'water'
         elif x_pos < 2.7 and self.state == 'water':
-            self.update(SimulationParameters(drive = 2.5,))
+            self.update(SimulationParameters(drive = WALK, downward_body_CPG_phi = WALK_BODY_PHI, limb_to_body_CPG_phi = WALK_BODY_LIMB_PHI,))
             self.state == 'ground'
         assert iteration >= 0
 

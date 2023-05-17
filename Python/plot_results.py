@@ -187,6 +187,7 @@ def plot_ex_2a(num_it):
         phase_lag_body[sim_num] = parameters.downward_body_CPG_phi
         links_positions = data.sensors.links.urdf_positions()
         links_vel = data.sensors.links.com_lin_velocities()
+        cost_of_transport[sim_num] = compute_cost_of_transport(data)
 
         speed_fw[sim_num], speed_lat = compute_speed(links_positions, links_vel, num_it)
 
@@ -195,7 +196,11 @@ def plot_ex_2a(num_it):
     print(phase_lag_body)
     print(speed_fw)
     results = np.array([drive, phase_lag_body, speed_fw]).T
+    plt.figure("phase_bias_and_drive_effect_to_speed_swimming")
     plot_2d(results, ['drive', 'downward body phase lag [rad]', 'forward speed [m/s]'], n_data=num_it, title='Effect of body phase lag and drive on swimming speed')
+    plt.figure("phase_bias_and_drive_effect_to_transport_swimming")
+    plot_2d(np.array([drive, phase_lag_body, cost_of_transport]).T, ['drive', 'downward body phase lag [rad]', 'cost of transport [J]'], n_data=num_it, title='Effect of body phase lag and drive on transport cost')
+
 
 
 def plot_ex_2b(num_it):
@@ -214,7 +219,6 @@ def plot_ex_2b(num_it):
         links_vel = data.sensors.links.com_lin_velocities()
         cost_of_transport[sim_num] = compute_cost_of_transport(data)
 
-
         speed_fw[sim_num], speed_lat = compute_speed(links_positions, links_vel, num_it)
 
     # Plot data
@@ -222,10 +226,10 @@ def plot_ex_2b(num_it):
     # print(phase_lag_body)
     # print(speed_fw)
     results = np.array([drive, phase_lag_body, speed_fw]).T
-    plt.figure("phase_bias_and_drive_effect_to_speed")
+    plt.figure("phase_bias_and_drive_effect_to_speed_walking")
     plot_2d(results, ['drive', 'downward body phase lag [rad]', 'forward speed [m/s]'], n_data=num_it, title='Effect of body phase lag and drive on walking speed')
 
-    plt.figure("phase_bias_and_drive_effect_to_transport")
+    plt.figure("phase_bias_and_drive_effect_to_transport_walking")
     plot_2d(np.array([drive, phase_lag_body, cost_of_transport]).T, ['drive', 'downward body phase lag [rad]', 'cost of transport [J]'], n_data=num_it, title='Effect of body phase lag and drive on transport cost')
 
 def plot_ex_3a(num_it=25):
@@ -298,14 +302,98 @@ def plot_ex_4b():
     plt.figure('Traj_s2w')
     plot_trajectory(head_positions)  
 
+def plot_ex_5a(num_it):
+    for sim_num in range(num_it):
+        filename = './logs/ex_5a/simulation_{}.{}'
+        data = SalamandraData.from_file(filename.format(sim_num, 'h5'))
+        timestep = data.timestep
+        n_iterations = np.shape(data.sensors.links.array)[0]
+        times = np.arange(
+        start=0,
+        stop=timestep*n_iterations,
+        step=timestep,
+        )
+        timestep = times[1] - times[0]
+        links_positions = data.sensors.links.urdf_positions()
+        head_positions = links_positions[:, 0, :]
+        head_positions = np.asarray(head_positions)
+        plt.figure('turning_pos_water_sim_' + str(sim_num))
+        plot_positions(times, head_positions)  
+        plt.figure('turning_water_sim_' + str(sim_num))
+        plot_trajectory(head_positions)  
+
+def plot_ex_5b(num_it):
+    for sim_num in range(num_it):
+        filename = './logs/ex_5b/simulation_{}.{}'
+        data = SalamandraData.from_file(filename.format(sim_num, 'h5'))
+        timestep = data.timestep
+        n_iterations = np.shape(data.sensors.links.array)[0]
+        times = np.arange(
+        start=0,
+        stop=timestep*n_iterations,
+        step=timestep,
+        )
+        timestep = times[1] - times[0]
+        links_positions = data.sensors.links.urdf_positions()
+        head_positions = links_positions[:, 0, :]
+        head_positions = np.asarray(head_positions)
+        plt.figure('backward_pos_water_sim_' + str(sim_num))
+        plot_positions(times, head_positions)  
+        plt.figure('backward_traj_water_sim_' + str(sim_num))
+        plot_trajectory(head_positions)  
+
+def plot_ex_5c(num_it):
+    for sim_num in range(num_it):
+        filename = './logs/ex_5c/simulation_{}.{}'
+        data = SalamandraData.from_file(filename.format(sim_num, 'h5'))
+        timestep = data.timestep
+        n_iterations = np.shape(data.sensors.links.array)[0]
+        times = np.arange(
+        start=0,
+        stop=timestep*n_iterations,
+        step=timestep,
+        )
+        timestep = times[1] - times[0]
+        links_positions = data.sensors.links.urdf_positions()
+        head_positions = links_positions[:, 0, :]
+        head_positions = np.asarray(head_positions)
+        plt.figure('turning_pos_land_sim_' + str(sim_num))
+        plot_positions(times, head_positions)  
+        plt.figure('turning_land_sim_' + str(sim_num))
+        plot_trajectory(head_positions)  
+
+def plot_ex_5d(num_it):
+    for sim_num in range(num_it):
+        filename = './logs/ex_5d/simulation_{}.{}'
+        data = SalamandraData.from_file(filename.format(sim_num, 'h5'))
+        timestep = data.timestep
+        n_iterations = np.shape(data.sensors.links.array)[0]
+        times = np.arange(
+        start=0,
+        stop=timestep*n_iterations,
+        step=timestep,
+        )
+        timestep = times[1] - times[0]
+        links_positions = data.sensors.links.urdf_positions()
+        head_positions = links_positions[:, 0, :]
+        head_positions = np.asarray(head_positions)
+        plt.figure('backward_pos_land_sim_' + str(sim_num))
+        plot_positions(times, head_positions)  
+        plt.figure('backward_traj_land_sim_' + str(sim_num))
+        plot_trajectory(head_positions)  
+
 def main(plot=True):
     """Main"""
     # plot_ex_2a(num_it=100)
     # plot_ex_2b(num_it=100)
     # plot_ex_3a(num_it=100)
     # plot_ex_3b(num_it=100)
-    plot_ex_4a()
-    plot_ex_4b()
+    # plot_ex_4a()
+    # plot_ex_4b()
+    plot_ex_5a(2)
+    plot_ex_5b(1)
+    plot_ex_5c(2)
+    plot_ex_5d(1)
     # Show plots
     if plot:
         plt.show()

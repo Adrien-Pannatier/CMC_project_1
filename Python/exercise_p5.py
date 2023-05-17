@@ -20,8 +20,7 @@ def exercise_5a_swim_turn(timestep):
             drive_factor_right = drive_factor_right,
             drive_factor_left = drive_factor_left
         )
-        for drive_factor_right in [1, 0.1] # turns right, then turns left
-        for drive_factor_left in [0.1, 1]
+        for drive_factor_right, drive_factor_left in zip([1, 0.1],[0.1, 1]) # turns right, then turns left
     ]
 
     # Grid search
@@ -97,8 +96,7 @@ def exercise_5c_walk_turn(timestep):
             drive_factor_right = drive_factor_right,
             drive_factor_left = drive_factor_left
         )
-        for drive_factor_right in [2, 0.1] # turns right, then turns left
-        for drive_factor_left in [0.1, 2]
+        for drive_factor_right,drive_factor_left in zip([2, 0.1],[0.1, 2]) # turns right, then turns left
     ]
 
     # Grid search

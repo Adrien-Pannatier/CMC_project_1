@@ -8,8 +8,11 @@ from simulation_parameters import SimulationParameters
 from salamandra_simulation.data import SalamandraState
 import farms_pylog as pylog
 
-WALK = 2.9
-SWIM = 4.9
+WALK = 2.6
+WALK_BODY_PHI = -2.51327
+WALK_BODY_LIMB_PHI = 3
+SWIM = 3.25
+SWIM_PHI = -2.51327
 
 def exercise_4a_transition_walk2swim(timestep):
     """[Project 1] 4a Transitions
@@ -34,6 +37,8 @@ def exercise_4a_transition_walk2swim(timestep):
             timestep = timestep,
             duration=30,
             drive = WALK,
+            downward_body_CPG_phi = WALK_BODY_PHI,
+            limb_to_body_CPG_phi = WALK_BODY_LIMB_PHI,
             spawn_position=[0,0,0.1],
             spawn_orientation=[0,0,np.pi/2],
             state = 'ground'
@@ -83,6 +88,7 @@ def exercise_4a_transition_swim2walk(timestep):
             timestep = timestep,
             duration=30,
             drive = SWIM,
+            downward_body_CPG_phi = SWIM_PHI,
             spawn_position=[6,0,0.1],
             spawn_orientation=[0,0,-np.pi/2],
             state = 'water'
