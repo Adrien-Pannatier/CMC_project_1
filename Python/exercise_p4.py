@@ -65,7 +65,7 @@ def exercise_4a_transition_walk2swim(timestep):
             pickle.dump(sim_parameters, param_file)
     return
 
-def exercise_4a_transition_swim2walk(timestep):
+def exercise_4b_transition_swim2walk(timestep):
     """[Project 1] 4a Transitions
 
     In this exerices, we will implement transitions.
@@ -117,6 +117,6 @@ def exercise_4a_transition_swim2walk(timestep):
 
 
 if __name__ == '__main__':
-    # exercise_4a_transition_walk2swim(timestep=1e-2)
-    exercise_4a_transition_swim2walk(timestep=1e-2)
+    exercise_4a_transition_walk2swim(timestep=1e-2)
+    exercise_4b_transition_swim2walk(timestep=1e-2)
 

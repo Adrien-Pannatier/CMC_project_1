@@ -161,7 +161,7 @@ def compute_cost_of_transport(data):
 #         amplitudes[sim_num] = parameters.amplitude_factor
 #         links_positions = data.sensors.links.urdf_positions()
 #         links_vel = data.sensors.links.com_lin_velocities()
-#         head_positions = links_positions[:, 0, :]
+        # head_positions = links_positions[:, 0, :]
 #         tail_positions = links_positions[:, 8, :]
 #         # joints_positions = data.sensors.joints.positions_all()
 #         joints_velocities = data.sensors.joints.velocities_all()
@@ -286,19 +286,76 @@ def plot_ex_3b(num_it=25):
 
 def plot_ex_4a():
     filename = './logs/ex_4/simulation_w2s_{}.{}'
-    data = SalamandraData.from_file(filename.format('0', 'h5'))
+    data = SalamandraData.from_file(filename.format('0', 'h5'))   
+    phases = data.state.phases()
+    limb_phases = phases[:,16:]
+    body_phases = phases[:,0:8]
     links_positions = data.sensors.links.urdf_positions()
+    body_x_positions = np.asarray(links_positions[:, 0:8, 0])
     head_positions = links_positions[:, 0, :]
     head_positions = np.asarray(head_positions)
+    
+    plt.figure('Phase_body_w2s')
+    for i in range(8):
+
+        # plt.plot(body_x_positions[:, i], body_phases[:, i])
+        plt.plot(head_positions[:, 0],body_phases[:, i], label=f"spine {i}")
+        plt.legend()
+        plt.ylabel('Body phase [deg]')
+        plt.xlabel('Distance [m]')
+        # plt.xlim(2,4)
+        # plt.ylim(25,100)
+        plt.grid(True)
+
+    plt.figure('Phase_limb_w2s')
+    for i in range(4):
+
+        # plt.plot(body_x_positions[:, i], body_phases[:, i])
+        plt.plot(head_positions[:, 0],limb_phases[:, i], label=f"limb {i}")
+        plt.legend()
+        plt.ylabel('Limb phase [deg]')
+        plt.xlabel('Distance [m]')
+        # plt.xlim(2,4)
+        # plt.ylim(25,100)
+        plt.grid(True)
+
     plt.figure('Traj_w2s')
     plot_trajectory(head_positions)  
 
 def plot_ex_4b():
     filename = './logs/ex_4/simulation_s2w_{}.{}'
     data = SalamandraData.from_file(filename.format('0', 'h5'))
+    phases = data.state.phases()
+    limb_phases = phases[:,16:]
+    body_phases = phases[:,0:8]
     links_positions = data.sensors.links.urdf_positions()
     head_positions = links_positions[:, 0, :]
     head_positions = np.asarray(head_positions)
+
+    plt.figure('Phase_body_s2w')
+    for i in range(8):
+
+        # plt.plot(body_x_positions[:, i], body_phases[:, i])
+        plt.plot(head_positions[:, 0], body_phases[:, i], label=f"spine {i}")
+        plt.legend()
+        plt.ylabel('Body phase [deg]')
+        plt.xlabel('Distance [m]')
+        # plt.xlim(2,4)
+        # plt.ylim(25,100)
+        plt.grid(True)
+
+    plt.figure('Phase_limb_s2w')
+    for i in range(4):
+
+        # plt.plot(body_x_positions[:, i], body_phases[:, i])
+        plt.plot(head_positions[:, 0],limb_phases[:, i], label=f"limb {i}")
+        plt.legend()
+        plt.ylabel('Limb phase [deg]')
+        plt.xlabel('Distance [m]')
+        # plt.xlim(2,4)
+        # plt.ylim(25,100)
+        plt.grid(True)
+
     plt.figure('Traj_s2w')
     plot_trajectory(head_positions)  
 
@@ -388,12 +445,12 @@ def main(plot=True):
     # plot_ex_2b(num_it=100)
     # plot_ex_3a(num_it=100)
     # plot_ex_3b(num_it=100)
-    # plot_ex_4a()
-    # plot_ex_4b()
-    plot_ex_5a(2)
-    plot_ex_5b(1)
-    plot_ex_5c(2)
-    plot_ex_5d(1)
+    plot_ex_4a()
+    plot_ex_4b()
+    # plot_ex_5a(2)
+    # plot_ex_5b(1)
+    # plot_ex_5c(2)
+    # plot_ex_5d(1)
     # Show plots
     if plot:
         plt.show()

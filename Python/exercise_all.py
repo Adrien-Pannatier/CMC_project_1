@@ -11,7 +11,10 @@ from exercise_p3 import (
     exercise_3a_coordination,
     exercise_3b_coordination
 )
-from exercise_p4 import exercise_4a_transition
+from exercise_p4 import (
+    exercise_4a_transition_walk2swim, 
+    exercise_4b_transition_swim2walk,
+)
 from exercise_p5 import (
     exercise_5a_swim_turn,
     exercise_5b_swim_back,
@@ -43,7 +46,9 @@ def exercise_all(arguments):
     if '3b' in arguments:
         exercise_3b_coordination(timestep)
     if '4a' in arguments:
-        exercise_4a_transition(timestep)
+        exercise_4a_transition_walk2swim(timestep)
+    if '4b' in arguments:
+        exercise_4b_transition_swim2walk(timestep)
     if '5a' in arguments:
         exercise_5a_swim_turn(timestep)
     if '5b' in arguments:
@@ -58,6 +63,6 @@ def exercise_all(arguments):
 
 
 if __name__ == '__main__':
-    exercises = ['1a', '2a', '2b', '3a', '3b', '4a', '5a', '5b', '5c', '5d']
+    exercises = ['1a', '2a', '2b', '3a', '3b', '4a', '4b', '5a', '5b', '5c', '5d']
     exercise_all(arguments=exercises)
 
