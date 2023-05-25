@@ -51,6 +51,9 @@ class SimulationParameters:
         self.state = None
         # Feel free to add more parameters 
 
+        # exercise 6
+        self.weight_sensory_feedback = 0.0052 # rad s-1 N-1 (sigma)
+        
         # Disruptions
         self.set_seed = False
         self.randseed = 0

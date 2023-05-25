@@ -40,22 +40,16 @@ def network_ode(time, state, robot_parameters, loads, contact_sens):
 
     n = len(phases)
     
-
     sin_diff = np.sin(phases.reshape((n, 1)) - phases.reshape((1, n)) - eq_param[2])
-    der_phases = 2*np.pi*eq_param[0] + np.dot(amplitudes, (eq_param[1]* sin_diff))
+    der_phases = 2*np.pi*eq_param[0] + np.dot(amplitudes, (eq_param[1]* sin_diff)) 
+
+    # modifying limb der_phases to add contact sensor feedback
+    # print(np.shape(loads))
+    # print(type(loads))
+    print(loads)
+    # der_phases[16:20] = der_phases[16:20] - robot_parameters.weight_sensory_feedback * loads * phases[16:20]
     
     der_amplitudes = eq_param[3]*(eq_param[4]-amplitudes)
-    # print(der_phases)
-    # print(der_phases)
-    # print(np.dot(np.dot(amplitudes, eq_param[1]), sin_diff))
-    # for i in range(n_oscillators): # includes body (1->16) and limbs (17->20)
-    #     for j in range(n_oscillators): # includes body (1->16) and limbs (17->20)
-    #         if i == j:
-    #             continue
-    #         sum_phase += amplitudes[j]*eq_param[1][i,j]*np.sin(phases[j] - phases[i] - eq_param[2][i, j])
-    #     der_phases[i] = 2*np.pi*eq_param[0][i] + sum_phase 
-    # print(der_phases)
-
 
     robot_parameters.set_der_phases(der_phases)
     # print(phases)

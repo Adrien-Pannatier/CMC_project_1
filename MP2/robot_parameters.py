@@ -40,6 +40,9 @@ class RobotParameters(dict):
         self.feedback_gains_walk = np.zeros(self.n_oscillators)
         self.der_phases = np.zeros(self.n_oscillators)
 
+        # exercise 6
+        self.weight_sensory_feedback = parameters.weight_sensory_feedback
+
         # gains for final motor output
         self.position_body_gain = parameters.position_body_gain
         self.position_limb_gain = parameters.position_limb_gain

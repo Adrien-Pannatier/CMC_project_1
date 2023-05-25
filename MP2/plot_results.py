@@ -439,18 +439,42 @@ def plot_ex_5d(num_it):
         plt.figure('backward_traj_land_sim_' + str(sim_num))
         plot_trajectory(head_positions)  
 
+def plot_ex_6a(num_it):
+    filename = './logs/ex_6a/simulation_{}.{}'
+    data = SalamandraData.from_file(filename.format('0', 'h5'))
+    phases = data.state.phases()
+    limb_phases = phases[:,16:]
+    body_phases = phases[:,0:8]
+    links_positions = data.sensors.links.urdf_positions()
+    head_positions = links_positions[:, 0, :]
+    head_positions = np.asarray(head_positions)
+
+    plt.figure('limb_phases vs ground_reaction_forces')
+    for i in range(4):
+
+        # plt.plot(body_x_positions[:, i], body_phases[:, i])
+        plt.plot(head_positions[:, 0],limb_phases[:, i], label=f"limb {i}")
+        plt.legend()
+        plt.ylabel('Limb phase [deg]')
+        plt.xlabel('Distance [m]')
+        # plt.xlim(2,4)
+        # plt.ylim(25,100)
+        plt.grid(True)
+    
+
 def main(plot=True):
     """Main"""
     # plot_ex_2a(num_it=100)
     # plot_ex_2b(num_it=100)
     # plot_ex_3a(num_it=100)
     # plot_ex_3b(num_it=100)
-    plot_ex_4a()
-    plot_ex_4b()
+    # plot_ex_4a()
+    # plot_ex_4b()
     # plot_ex_5a(2)
     # plot_ex_5b(1)
     # plot_ex_5c(2)
     # plot_ex_5d(1)
+    plot_ex_6a(1)
     # Show plots
     if plot:
         plt.show()

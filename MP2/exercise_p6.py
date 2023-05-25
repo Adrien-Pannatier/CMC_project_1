@@ -29,7 +29,39 @@ def exercise_6a_phase_relation(timestep):
         to get the right coordination
     """
     # Use exercise_example.py for reference
-    pass
+     # Parameters
+    parameter_set = [
+        SimulationParameters(
+            duration=10,  # Simulation duration in [s]
+            timestep=timestep,  # Simulation timestep in [s]
+            spawn_position=[0, 0, 0.1],  # Robot position in [m]
+            spawn_orientation=[0,0,np.pi/2],
+            drive=2.9,
+            bdhigh = 1 # disables the spine oscillations -> spine rigid
+        )
+
+        # for drive_factor_right, drive_factor_left in zip([1, 0.1],[0.1, 1]) # turns right, then turns left
+        
+    ]
+    # Grid search
+    os.makedirs('./logs/ex_6a/', exist_ok=True)
+    for simulation_i, sim_parameters in enumerate(parameter_set):
+        filename = './logs/ex_6a/simulation_{}.{}'
+        sim, data = simulation(
+            sim_parameters=sim_parameters,  # Simulation parameters, see above
+            arena='land',  # Can also be 'land'
+            fast=False,  # For fast mode (not real-time)
+            headless=False,  # For headless mode (No GUI, could be faster)
+            record=False,  # Record video
+            record_path="videos/test_video_drive_" + \
+            str(simulation_i),  # video saving path
+            camera_id=2  # camera type: 0=top view, 1=front view, 2=side view,
+        )
+        # Log robot data
+        data.to_file(filename.format(simulation_i, 'h5'), sim.iteration)
+        # Log simulation parameters
+        with open(filename.format(simulation_i, 'pickle'), 'wb') as param_file:
+            pickle.dump(sim_parameters, param_file)
     return
 
 
@@ -100,7 +132,7 @@ def exercise_6d_open_vs_closed(timestep):
 
 if __name__ == '__main__':
     exercise_6a_phase_relation(timestep=1e-2)
-    exercise_6b_tegotae_limbs(timestep=1e-2)
-    exercise_6c_tegotae_spine(timestep=1e-2)
-    exercise_6d_open_vs_closed(timestep=1e-2)
+    # exercise_6b_tegotae_limbs(timestep=1e-2)
+    # exercise_6c_tegotae_spine(timestep=1e-2)
+    # exercise_6d_open_vs_closed(timestep=1e-2)
 
