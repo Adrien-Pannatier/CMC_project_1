@@ -444,19 +444,19 @@ def plot_ex_6a(num_it):
     data = SalamandraData.from_file(filename.format('0', 'h5'))
     phases = data.state.phases()
     limb_phases = phases[:,16:]
-    body_phases = phases[:,0:8]
-    links_positions = data.sensors.links.urdf_positions()
-    head_positions = links_positions[:, 0, :]
-    head_positions = np.asarray(head_positions)
-
+    ground_forces = np.asarray(data.sensors.contacts.reactions()) # array of type [times, 4(limbs), 3(xyz)]
+    threshold_grf = 5
+    ground_forces_i = ground_forces < threshold_grf
+    ground_forces[ground_forces_i] = 0
+    print(ground_forces)
+    print(np.shape(ground_forces))
+    print(type(ground_forces))
     plt.figure('limb_phases vs ground_reaction_forces')
     for i in range(4):
-
-        # plt.plot(body_x_positions[:, i], body_phases[:, i])
-        plt.plot(head_positions[:, 0],limb_phases[:, i], label=f"limb {i}")
+        plt.plot(limb_phases[:, i], ground_forces[:, i, 2], label=f"limb {i}")
         plt.legend()
-        plt.ylabel('Limb phase [deg]')
-        plt.xlabel('Distance [m]')
+        plt.xlabel('Limb phase [deg]')
+        plt.ylabel('Ground Force [N]')
         # plt.xlim(2,4)
         # plt.ylim(25,100)
         plt.grid(True)
