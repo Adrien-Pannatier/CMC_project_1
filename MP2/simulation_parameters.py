@@ -16,10 +16,10 @@ class SimulationParameters:
         self.position_limb_gain = 1  # default do not change
         self.phase_lag_body = None
         self.amplitude_gradient = None
-        self.downward_body_CPG_w = 10
-        self.upward_body_CPG_w = 10
-        self.contralateral_body_CPG_w = 10
-        self.limb_to_body_CPG_w = 30
+        self.downward_body_CPG_w = 30
+        self.upward_body_CPG_w = 30
+        self.contralateral_body_CPG_w = 30
+        self.limb_to_body_CPG_w = 0
         self.within_limb_CPG_w = 10
         self.downward_body_CPG_phi = -2*np.pi/self.n_body_joints
         self.upward_body_CPG_phi = -self.downward_body_CPG_phi
@@ -27,6 +27,7 @@ class SimulationParameters:
         self.limb_to_body_CPG_phi = np.pi
         self.within_limb_CPG_phi = np.pi
         self.amplitude_factor = 1
+        self.feedback_factor = 1
         self.walk_backwards = False
         self.conv_fac = 20
         self.bcv1   = 0.2
@@ -36,7 +37,7 @@ class SimulationParameters:
         self.bcR0   = 0.196
         self.bRsat  = 0
         self.bdlow  = 1
-        self.bdhigh = 5
+        self.bdhigh = 1
         self.lcv1   = 0.2
         self.lcv0   = 0
         self.lvsat  = 0
@@ -52,7 +53,7 @@ class SimulationParameters:
         # Feel free to add more parameters 
 
         # exercise 6
-        self.weight_sensory_feedback = 0.0052 # rad s-1 N-1 (sigma)
+        self.weight_sensory_feedback = 0.052 # rad s-1 N-1 (sigma), in paper this value is 0.0052
         
         # Disruptions
         self.set_seed = False

@@ -104,9 +104,7 @@ def run_network(duration, update=True, drive=0, timestep=1e-2):
     axes[0].text(40.3, -0.5, 'π/3', rotation = "horizontal", fontsize=7)
     axes[0].set_xticklabels([])
     axes[0].set_ylabel("x Body")
-    # axes[0].legend(loc='upper left')
-    #limb output command q
-    # plt.subplot(412)
+    
     axes[1].set_yticklabels([])
     axes[1].set_xticklabels([])
     axes[1].plot(times,outputs_log[:, 13], color='steelblue')

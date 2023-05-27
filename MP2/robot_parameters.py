@@ -23,6 +23,7 @@ class RobotParameters(dict):
         self.n_body_joints = parameters.n_body_joints
         self.n_legs_joints = parameters.n_legs_joints
         self.initial_phases = parameters.initial_phases
+        self.feedback_factor = parameters.feedback_factor
         self.conv_fac = parameters.conv_fac
         self.n_joints = self.n_body_joints + self.n_legs_joints
         self.n_oscillators_body = 2*self.n_body_joints

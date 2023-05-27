@@ -29,6 +29,7 @@ def network_ode(time, state, robot_parameters, loads, contact_sens):
     n_body_joints = robot_parameters.n_body_joints # 8
     coupling_weights = robot_parameters.coupling_weights
     phase_bias = robot_parameters.phase_bias
+    feed_back_fac = robot_parameters.feedback_factor
     phases = state[:n_oscillators]
     amplitudes = state[n_oscillators:2*n_oscillators]
     der_phases = np.zeros_like(phases)
@@ -51,19 +52,24 @@ def network_ode(time, state, robot_parameters, loads, contact_sens):
     # here the weight is negative, explaining the + sign
     # print(der_phases)
     ground_forces_i = np.zeros_like(contact_sens)
-    high_threshold_grf = 18
-    low_threshold_grf = 5
+    # high_threshold_grf = 18
+    low_threshold_grf = 7
     ground_forces_i = low_threshold_grf < contact_sens
-    ground_forces_i =  contact_sens > high_threshold_grf
+    # ground_forces_i =  contact_sens > high_threshold_grf
     contact_sens[ground_forces_i] = 0
-
-    der_phases[16:20] = der_phases[16:20] + robot_parameters.weight_sensory_feedback * contact_sens * np.cos(phases[16:20])
+    # print(np.shape(contact_sens))
+    der_phases[16] = der_phases[16] + feed_back_fac * robot_parameters.weight_sensory_feedback * contact_sens[0] * np.cos(phases[16])
+    der_phases[17] = der_phases[17] - feed_back_fac * robot_parameters.weight_sensory_feedback * contact_sens[1] * np.cos(phases[17])
+    der_phases[18] = der_phases[18] - feed_back_fac * robot_parameters.weight_sensory_feedback * contact_sens[2] * np.cos(phases[18])
+    der_phases[19] = der_phases[19] + feed_back_fac * robot_parameters.weight_sensory_feedback * contact_sens[3] * np.cos(phases[19])
     # print('phases: ')
     # print(np.cos(phases[16:20]) )
     # print('grf: ')
     # print(contact_sens)
-    # print('impact:')s
-    # print(robot_parameters.weight_sensory_feedback * contact_sens * np.cos(phases[16:20]))
+    # print('impact:')
+    # print(f"phases are: {phases[17]/(2*np.pi)}")
+    # print(robot_parameters.freqs)
+    # print(robot_parameters.weight_sensory_feedback * contact_sens[1] * np.cos(phases[17]))
     der_amplitudes = eq_param[3]*(eq_param[4]-amplitudes)
 
     robot_parameters.set_der_phases(der_phases)

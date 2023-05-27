@@ -452,16 +452,38 @@ def plot_ex_6a(num_it):
     n = 10  # the larger n is, the smoother curve will be
     b = [1.0 / n] * n
     a = 1
-    print(ground_forces)
-    print(np.shape(ground_forces))
-    print(type(ground_forces))
+    # print(ground_forces)
+    # print(np.shape(ground_forces))
+    # print(type(ground_forces))
     # f, axes = plt.subplots(4)
     # f.suptitle('')
+    timestep = data.timestep
+    n_iterations = np.shape(data.sensors.links.array)[0]
+    times = np.arange(
+        start=0,
+        stop=timestep*n_iterations,
+        step=timestep,
+    )
+    timestep = times[1] - times[0]
+    amplitudes = data.state.amplitudes()
+    print("AAAMp")
+    print(np.shape(amplitudes))
+    plt.figure("6_1_frequencies")
+    plt.plot(times,amplitudes[:, 0], color='olivedrab', label='Spine nominal amplitudes')
+    for i in range(1, 16):
+        plt.plot(times,amplitudes[:, i], color='olivedrab')
+    plt.plot(times,amplitudes[:, 16], color='chocolate', label='Limb nominal amplitudes')
+    for i in range(17, 20):
+        plt.plot(times,amplitudes[:, i], color='chocolate')
+    plt.legend()
+    plt.ylabel('Amplitudes')
+    plt.xlabel('Time [s]')
+    plt.grid(True)
     
-    plt.figure('limb_phases vs ground_reaction_forces')
+    plt.figure('limb_phases_vs_ground_reaction_forces')
     for i in range(4):
         ground_forces[:, i, 2] = lfilter(b, a, ground_forces[:, i, 2])
-        plt.plot(limb_phases[:, i], ground_forces[:, i, 2], label=f"limb {i}")
+        plt.plot(limb_phases[:, i], ground_forces[:, i, 2], label=f"limb {i+1}")
         plt.legend()
         # plt.set_xlim([13, 16])
         plt.xlabel('Limb phase [rad]')
@@ -488,12 +510,12 @@ def plot_ex_6b(num_it):
     
     times = np.arange(0, 10, 1e-2)
 
-    plt.figure('Visualisation of grf implementation +-')
+    plt.figure('Visualisation_of_grf_implementation_pm')
     for i in range(4):
-        ground_forces[:, i, 2] = lfilter(b, a, ground_forces[:, i, 2])
+        # ground_forces[:, i, 2] = lfilter(b, a, ground_forces[:, i, 2])
         plt.plot(times, limb_phases[:, i], label=f"limb {i}")
         plt.legend()
-        plt.xlim([0, 2*np.pi])
+        plt.xlim([0, 10])
         plt.xlabel('Time [s]')
         plt.ylabel('Limb phase [rad]')
         plt.grid(True)
@@ -512,8 +534,8 @@ def main(plot=True):
     # plot_ex_5b(1)
     # plot_ex_5c(2)
     # plot_ex_5d(1)
-    # plot_ex_6a(1)
-    plot_ex_6b(1)
+    plot_ex_6a(1)
+    # plot_ex_6b(1)
     # Show plots
     if plot:
         plt.show()
