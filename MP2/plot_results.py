@@ -12,6 +12,7 @@ from salamandra_simulation.parse_args import save_plots
 from salamandra_simulation.save_figures import save_figures
 from network import motor_output
 import matplotlib.colors as colors
+from scipy.signal import lfilter
 
 
 def plot_positions(times, link_data):
@@ -352,8 +353,6 @@ def plot_ex_4b():
         plt.legend()
         plt.ylabel('Limb phase [deg]')
         plt.xlabel('Distance [m]')
-        # plt.xlim(2,4)
-        # plt.ylim(25,100)
         plt.grid(True)
 
     plt.figure('Traj_s2w')
@@ -445,22 +444,61 @@ def plot_ex_6a(num_it):
     phases = data.state.phases()
     limb_phases = phases[:,16:]
     ground_forces = np.asarray(data.sensors.contacts.reactions()) # array of type [times, 4(limbs), 3(xyz)]
-    threshold_grf = 5
-    ground_forces_i = ground_forces < threshold_grf
+    high_threshold_grf = 18
+    low_threshold_grf = 5
+    ground_forces_i = low_threshold_grf < ground_forces
+    ground_forces_i =  ground_forces > high_threshold_grf
     ground_forces[ground_forces_i] = 0
+    n = 10  # the larger n is, the smoother curve will be
+    b = [1.0 / n] * n
+    a = 1
     print(ground_forces)
     print(np.shape(ground_forces))
     print(type(ground_forces))
+    # f, axes = plt.subplots(4)
+    # f.suptitle('')
+    
     plt.figure('limb_phases vs ground_reaction_forces')
     for i in range(4):
+        ground_forces[:, i, 2] = lfilter(b, a, ground_forces[:, i, 2])
         plt.plot(limb_phases[:, i], ground_forces[:, i, 2], label=f"limb {i}")
         plt.legend()
-        plt.xlabel('Limb phase [deg]')
+        # plt.set_xlim([13, 16])
+        plt.xlabel('Limb phase [rad]')
         plt.ylabel('Ground Force [N]')
-        # plt.xlim(2,4)
-        # plt.ylim(25,100)
         plt.grid(True)
+
+def plot_ex_6b(num_it):
+    filename = './logs/ex_6b/simulation_{}.{}'
+    data = SalamandraData.from_file(filename.format('0', 'h5'))
+    phases = data.state.phases()
+    limb_phases = phases[:,16:]
+    ground_forces = np.asarray(data.sensors.contacts.reactions()) # array of type [times, 4(limbs), 3(xyz)]
+    high_threshold_grf = 18
+    low_threshold_grf = 5
+    ground_forces_i = low_threshold_grf < ground_forces
+    ground_forces_i =  ground_forces > high_threshold_grf
+    ground_forces[ground_forces_i] = 0
+    n = 10  # the larger n is, the smoother curve will be
+    b = [1.0 / n] * n
+    a = 1
+    print(ground_forces)
+    print(np.shape(ground_forces))
+    print(type(ground_forces))
     
+    times = np.arange(0, 10, 1e-2)
+
+    plt.figure('Visualisation of grf implementation +-')
+    for i in range(4):
+        ground_forces[:, i, 2] = lfilter(b, a, ground_forces[:, i, 2])
+        plt.plot(times, limb_phases[:, i], label=f"limb {i}")
+        plt.legend()
+        plt.xlim([0, 2*np.pi])
+        plt.xlabel('Time [s]')
+        plt.ylabel('Limb phase [rad]')
+        plt.grid(True)
+
+
 
 def main(plot=True):
     """Main"""
@@ -474,7 +512,8 @@ def main(plot=True):
     # plot_ex_5b(1)
     # plot_ex_5c(2)
     # plot_ex_5d(1)
-    plot_ex_6a(1)
+    # plot_ex_6a(1)
+    plot_ex_6b(1)
     # Show plots
     if plot:
         plt.show()

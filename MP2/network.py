@@ -44,15 +44,30 @@ def network_ode(time, state, robot_parameters, loads, contact_sens):
     der_phases = 2*np.pi*eq_param[0] + np.dot(amplitudes, (eq_param[1]* sin_diff)) 
 
     # modifying limb der_phases to add contact sensor feedback
-    print(contact_sens)
-    print(np.shape(contact_sens))
-    print(type(contact_sens))
-    der_phases[16:20] = der_phases[16:20] - robot_parameters.weight_sensory_feedback * contact_sens * phases[16:20]
-    
+    # print(np.shape(loads))
+    # print(type(loads)),
+    # from 0 to np.pi, the grf are zero hence the whole function is equal to zero. Then it slowly raises from np.pi to 3/2*np.pi,
+    #  where feedback would accelerate hence need positive sensitivity function value hence need cosinus
+    # here the weight is negative, explaining the + sign
+    # print(der_phases)
+    ground_forces_i = np.zeros_like(contact_sens)
+    high_threshold_grf = 18
+    low_threshold_grf = 5
+    ground_forces_i = low_threshold_grf < contact_sens
+    ground_forces_i =  contact_sens > high_threshold_grf
+    contact_sens[ground_forces_i] = 0
+
+    der_phases[16:20] = der_phases[16:20] + robot_parameters.weight_sensory_feedback * contact_sens * np.cos(phases[16:20])
+    # print('phases: ')
+    # print(np.cos(phases[16:20]) )
+    # print('grf: ')
+    # print(contact_sens)
+    # print('impact:')s
+    # print(robot_parameters.weight_sensory_feedback * contact_sens * np.cos(phases[16:20]))
     der_amplitudes = eq_param[3]*(eq_param[4]-amplitudes)
 
     robot_parameters.set_der_phases(der_phases)
-    # print(phases)
+    
     return np.concatenate([der_phases, der_amplitudes])
 
 def motor_output(phases, amplitudes, iteration):
