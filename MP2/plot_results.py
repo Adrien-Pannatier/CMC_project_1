@@ -466,29 +466,16 @@ def plot_ex_6a(num_it):
     )
     timestep = times[1] - times[0]
     amplitudes = data.state.amplitudes()
-    print("AAAMp")
-    print(np.shape(amplitudes))
-    plt.figure("6_1_frequencies")
-    plt.plot(times,amplitudes[:, 0], color='olivedrab', label='Spine nominal amplitudes')
-    for i in range(1, 16):
-        plt.plot(times,amplitudes[:, i], color='olivedrab')
-    plt.plot(times,amplitudes[:, 16], color='chocolate', label='Limb nominal amplitudes')
-    for i in range(17, 20):
-        plt.plot(times,amplitudes[:, i], color='chocolate')
-    plt.legend()
-    plt.ylabel('Amplitudes')
-    plt.xlabel('Time [s]')
-    plt.grid(True)
     
     plt.figure('limb_phases_vs_ground_reaction_forces')
     for i in range(4):
         ground_forces[:, i, 2] = lfilter(b, a, ground_forces[:, i, 2])
         plt.plot(limb_phases[:, i], ground_forces[:, i, 2], label=f"limb {i+1}")
-        plt.legend()
-        # plt.set_xlim([13, 16])
-        plt.xlabel('Limb phase [rad]')
-        plt.ylabel('Ground Force [N]')
-        plt.grid(True)
+    plt.plot(limb_phases[:, i],-np.cos(limb_phases[:, i]), label=f"cosine")
+    plt.legend()
+    plt.xlabel('Limb phase [rad]')
+    plt.ylabel('Ground Force [N]')
+    plt.grid(True)
 
 def plot_ex_6b(num_it):
     filename = './logs/ex_6b/simulation_{}.{}'
@@ -512,14 +499,12 @@ def plot_ex_6b(num_it):
 
     plt.figure('Visualisation_of_grf_implementation_pm')
     for i in range(4):
-        # ground_forces[:, i, 2] = lfilter(b, a, ground_forces[:, i, 2])
         plt.plot(times, limb_phases[:, i], label=f"limb {i}")
         plt.legend()
         plt.xlim([0, 10])
         plt.xlabel('Time [s]')
         plt.ylabel('Limb phase [rad]')
         plt.grid(True)
-
 
 
 def main(plot=True):

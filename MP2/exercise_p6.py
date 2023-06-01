@@ -48,8 +48,8 @@ def exercise_6a_phase_relation(timestep):
         sim, data = simulation(
             sim_parameters=sim_parameters,  # Simulation parameters, see above
             arena='land',  # Can also be 'land'
-            fast=True,  # For fast mode (not real-time)
-            headless=True,  # For headless mode (No GUI, could be faster)
+            fast=False,  # For fast mode (not real-time)
+            headless=False,  # For headless mode (No GUI, could be faster)
             record=False,  # Record video
             record_path="videos/test_video_drive_" + \
             str(simulation_i),  # video saving path
@@ -110,7 +110,7 @@ def exercise_6b_tegotae_limbs(timestep):
         sim, data = simulation(
             sim_parameters=sim_parameters,  # Simulation parameters, see above
             arena='land',  # Can also be 'land'
-            fast=True,  # For fast mode (not real-time)
+            fast=False,  # For fast mode (not real-time)
             headless=False,  # For headless mode (No GUI, could be faster)
             record=False,  # Record video
             record_path="videos/test_video_drive_" + \
@@ -165,7 +165,7 @@ def exercise_6c_tegotae_spine(timestep):
         sim, data = simulation(
             sim_parameters=sim_parameters,  # Simulation parameters, see above
             arena='land',  # Can also be 'land'
-            fast=True,  # For fast mode (not real-time)
+            fast=False,  # For fast mode (not real-time)
             headless=False,  # For headless mode (No GUI, could be faster)
             record=False,  # Record video
             record_path="videos/test_video_drive_" + \
@@ -190,7 +190,7 @@ def exercise_6d_open_vs_closed(timestep):
 
     Implement the following cases
     1. Open loop: spine undulation, with limb to body coupling, no limb to limb coupling
-    2. Open loop: spine undlation, with limb to body coupling, with limb to limb coupling
+    2. Open loop: spine undulation, with limb to body coupling, with limb to limb coupling
     3. Closed loop: spine undulation, with limb to body coupling, no limb to limb coupling
     4. Closed loop: spine undlation, with limb to body coupling, with limb to limb coupling
 
@@ -221,7 +221,7 @@ def exercise_6d_open_vs_closed(timestep):
         sim, data = simulation(
             sim_parameters=sim_parameters,  # Simulation parameters, see above
             arena='land',  # Can also be 'land'
-            fast=True,  # For fast mode (not real-time)
+            fast=False,  # For fast mode (not real-time)
             headless=False,  # For headless mode (No GUI, could be faster)
             record=False,  # Record video
             record_path="videos/test_video_drive_" + \
