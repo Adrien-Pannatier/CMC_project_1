@@ -48,6 +48,10 @@ class RobotParameters(dict):
         self.feedback_fac = parameters.feedback_fac
         self.weight_sensory_feedback = parameters.weight_sensory_feedback
 
+        # for part 7
+        self.is_touching_ground = False
+        self.was_just_touching_ground = False
+
         self.set_coupling_weights_and_phase_bias(parameters)
 
         self.set_amplitudes_rate(parameters)
@@ -80,18 +84,40 @@ class RobotParameters(dict):
         gps = np.array(
             salamandra_data.sensors.links.urdf_positions()[iteration, :9],
         )
+        x_pos = gps[4, 0]
 
         grf_z = np.array(salamandra_data.sensors.contacts.array[:,:,2])[iteration] # c'est pas juste, ça a une forme de 1000x4
+        self.touching_ground = np.any(grf_z)
         print(grf_z)
-        
+        print(np.any(grf_z))
+
+        # problème 1 : des fois la salamandre a pas tous les pieds au sol
+        # solution 1 : je regarde qu'elle ait deux itérations de suite les pieds au sol
+
+        # problème 2 : elle spawn en l'air alors elle croit qu'elle est dans l'eau
+
+        if not self.is_touching_ground and not self.was_just_touching_ground and self.state == 'ground':
+            # change the simulation parameters
+            self.update(SimulationParameters(drive = SWIM, downward_body_CPG_phi = SWIM_PHI,))
+            print("swim")
+            self.state = 'water'
+        elif self.is_touching_ground and self.was_just_touching_ground and self.state == 'water':
+            self.update(SimulationParameters(drive = WALK, downward_body_CPG_phi = WALK_BODY_PHI, limb_to_body_CPG_phi = WALK_BODY_LIMB_PHI,))
+            print("walk")
+            self.state = 'ground'
+        assert iteration >= 0
+
         # if x_pos > 2.7 and self.state == 'ground':
         #     # change the simulation parameters
         #     self.update(SimulationParameters(drive = SWIM, downward_body_CPG_phi = SWIM_PHI,))
+        #     # print(grf_z)
         #     self.state == 'water'
         # elif x_pos < 2.7 and self.state == 'water':
         #     self.update(SimulationParameters(drive = WALK, downward_body_CPG_phi = WALK_BODY_PHI, limb_to_body_CPG_phi = WALK_BODY_LIMB_PHI,))
         #     self.state == 'ground'
         # assert iteration >= 0
+
+        self.was_just_touching_ground = self.touching_ground
 
     def get_parameters(self):
         return self.freqs, self.coupling_weights, self.phase_bias, self.rates, self.nominal_amplitudes
