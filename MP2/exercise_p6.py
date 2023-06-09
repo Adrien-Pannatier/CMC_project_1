@@ -101,7 +101,6 @@ def exercise_6b_tegotae_limbs(timestep):
             within_limb_CPG_w = 0,
             feedback_fac = 0
         )
-        # for weight_sensory_feedback in np.linspace(-1, 1, 100)
     ]
     # Grid search
     os.makedirs('./logs/ex_6b/', exist_ok=True)
@@ -238,8 +237,8 @@ def exercise_6d_open_vs_closed(timestep):
 
 
 if __name__ == '__main__':
-    # exercise_6a_phase_relation(timestep=1e-2)
+    exercise_6a_phase_relation(timestep=1e-2)
     exercise_6b_tegotae_limbs(timestep=1e-2)
-    # exercise_6c_tegotae_spine(timestep=1e-2)
-    # exercise_6d_open_vs_closed(timestep=1e-2)
+    exercise_6c_tegotae_spine(timestep=1e-2)
+    exercise_6d_open_vs_closed(timestep=1e-2)
 
