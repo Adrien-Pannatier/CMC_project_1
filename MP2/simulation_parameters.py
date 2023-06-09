@@ -53,7 +53,7 @@ class SimulationParameters:
 
         # for part 6
         self.feedback_fac = 1
-        self.weight_sensory_feedback = 0.0052
+        self.weight_sensory_feedback = 0.25
 
         # Disruptions
         self.set_seed = False

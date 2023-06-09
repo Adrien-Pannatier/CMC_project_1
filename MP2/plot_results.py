@@ -138,11 +138,10 @@ def compute_cost_of_transport(data):
     joints_velocities = data.sensors.joints.velocities_all()
     joints_torques = data.sensors.joints.motor_torques_all()
     timestep = data.timestep
-    # sum the velocieties for each joint, for each timestep
+    # sum the velocities for each joint, for each timestep
     joints_velocities_summed = np.sum(np.abs(joints_velocities), axis=0)
     joints_torques_summed = np.sum(np.abs(joints_torques), axis=0)
     cost_of_transport = np.abs(np.dot(joints_velocities_summed,joints_torques_summed)*timestep)
-    print(cost_of_transport)
     return cost_of_transport
 
 
@@ -267,20 +266,11 @@ def plot_ex_3b(num_it=25):
             parameters = pickle.load(param_file)
 
         drive[sim_num] = parameters.drive 
-        # print(data.state.amplitudes()[900][10])
-        # amplitudes[sim_num] = parameters.amplitude_factor
         amplitudes[sim_num] = data.state.amplitudes()[500][10]
-        # amplitudes[sim_num] = osc_amplitude
-        # amplitudes[sim_num] = parameters.amplitude_factor*(parameters.bcR1 * parameters.drive + parameters.bcR0)
-        # amplitudes[sim_num] = parameters.amplitude_factor
         links_positions = data.sensors.links.urdf_positions()
         links_vel = data.sensors.links.com_lin_velocities()
         speed_fw[sim_num], speed_lat = compute_speed(links_positions, links_vel)
 
-    print(drive)
-    print(amplitudes)
-    print(speed_fw)
-    print(np.shape(np.array([drive, amplitudes, speed_fw])))
     results = np.array([drive, amplitudes, speed_fw]).T
     plt.figure("Nom_amplitude_drive_to_speed")
     plot_2d(results, ['drive', 'amplitude factor', 'forward speed'], n_data=num_it, title='Effects of amplitude factor and drive on speed')
@@ -481,30 +471,92 @@ def plot_ex_6b(num_it):
     filename = './logs/ex_6b/simulation_{}.{}'
     data = SalamandraData.from_file(filename.format('0', 'h5'))
     phases = data.state.phases()
-    limb_phases = phases[:,16:]
-    ground_forces = np.asarray(data.sensors.contacts.reactions()) # array of type [times, 4(limbs), 3(xyz)]
-    high_threshold_grf = 18
-    low_threshold_grf = 5
-    ground_forces_i = low_threshold_grf < ground_forces
-    ground_forces_i =  ground_forces > high_threshold_grf
-    ground_forces[ground_forces_i] = 0
-    n = 10  # the larger n is, the smoother curve will be
-    b = [1.0 / n] * n
-    a = 1
-    print(ground_forces)
-    print(np.shape(ground_forces))
-    print(type(ground_forces))
-    
-    times = np.arange(0, 10, 1e-2)
+    # limb_phases = phases[:,16:]
+    with open(filename.format(0, 'pickle'), 'rb') as param_file:     
+                parameters = pickle.load(param_file)
+    links_positions = data.sensors.links.urdf_positions()
+    head_positions = links_positions[:, 0, :]
+    head_positions = np.asarray(head_positions)
 
-    plt.figure('Visualisation_of_grf_implementation_pm')
-    for i in range(4):
-        plt.plot(times, limb_phases[:, i], label=f"limb {i}")
+    plt.figure("6_b_trajectory")
+    plot_trajectory(head_positions)
+    plt.legend()
+    
+    # ground_forces = np.asarray(data.sensors.contacts.reactions()) # array of type [times, 4(limbs), 3(xyz)]
+    # high_threshold_grf = 18
+    # low_threshold_grf = 5
+    # ground_forces_i = low_threshold_grf < ground_forces
+    # ground_forces_i =  ground_forces > high_threshold_grf
+    # ground_forces[ground_forces_i] = 0
+    # n = 10  # the larger n is, the smoother curve will be
+    # b = [1.0 / n] * n
+    # a = 1
+    
+    # times = np.arange(0, 10, 1e-2)
+
+    # plt.figure('Visualisation_of_grf_implementation_pm')
+    # for i in range(4):
+    #     plt.plot(times, limb_phases[:, i], label=f"limb {i}")
+    #     plt.legend()
+    #     plt.xlim([0, 2])
+    #     plt.xlabel('Time [s]')
+    #     plt.ylabel('Limb phase [rad]')
+    #     plt.grid(True)
+
+def plot_ex_6b_2(num_it):
+    # to see the effect of the weight of the sensory feedback and justify its choice
+    speed_fw = np.zeros(num_it)
+    weights = np.zeros(num_it)
+    cost_of_transport = np.zeros(num_it)
+    for sim_num in range(num_it):
+        filename = './logs/ex_6b/simulation_{}.{}'
+        data = SalamandraData.from_file(filename.format(sim_num, 'h5'))
+        with open(filename.format(sim_num, 'pickle'), 'rb') as param_file:     
+                    parameters = pickle.load(param_file)
+        weights[sim_num] = parameters.weight_sensory_feedback
+        links_positions = data.sensors.links.urdf_positions()
+        links_vel = data.sensors.links.com_lin_velocities()
+        cost_of_transport[sim_num] = compute_cost_of_transport(data)
+        speed_fw[sim_num], speed_lat = compute_speed(links_positions, links_vel)
+
+    plt.figure('Visualisation_of_best_weight_speed_large_win_undulation')
+    plt.plot(weights, speed_fw)
+    # plt.legend()
+    plt.xlim([0, 1])
+    plt.xlabel('Weight parameter')
+    plt.ylabel('Forward speed [m/s]')
+    plt.grid(True)
+
+def plot_ex_6c(num_it):
+    for sim_num in range(num_it):
+        filename = './logs/ex_6c/simulation_{}.{}'
+        data = SalamandraData.from_file(filename.format(sim_num, 'h5'))
+        with open(filename.format(sim_num, 'pickle'), 'rb') as param_file:     
+                    parameters = pickle.load(param_file)
+        links_positions = data.sensors.links.urdf_positions()
+        head_positions = links_positions[:, 0, :]
+        head_positions = np.asarray(head_positions)
+
+        plt.figure("6_c_trajectories")
+        plot_trajectory(head_positions, label=f'sim {sim_num+1}')
         plt.legend()
-        plt.xlim([0, 10])
-        plt.xlabel('Time [s]')
-        plt.ylabel('Limb phase [rad]')
-        plt.grid(True)
+    
+def plot_ex_6d(num_it):
+    cost_of_transport = np.zeros(num_it)
+    for sim_num in range(num_it):
+        filename = './logs/ex_6d/simulation_{}.{}'
+        data = SalamandraData.from_file(filename.format(sim_num, 'h5'))
+        with open(filename.format(sim_num, 'pickle'), 'rb') as param_file:     
+                    parameters = pickle.load(param_file)
+        links_positions = data.sensors.links.urdf_positions()
+        head_positions = links_positions[:, 0, :]
+        head_positions = np.asarray(head_positions)
+        cost_of_transport[sim_num] = compute_cost_of_transport(data)
+
+        # if sim_num < 2:
+        plt.figure("6_d_trajectories")
+        plot_trajectory(head_positions, label=f'sim {sim_num+1}, ct = {cost_of_transport[sim_num]}')
+        plt.legend()
 
 
 def main(plot=True):
@@ -519,8 +571,11 @@ def main(plot=True):
     # plot_ex_5b(1)
     # plot_ex_5c(2)
     # plot_ex_5d(1)
-    plot_ex_6a(1)
-    # plot_ex_6b(1)
+    # plot_ex_6a(1)
+    plot_ex_6b(1)
+    # plot_ex_6b_2(100)
+    # plot_ex_6c(3)
+    # plot_ex_6d(4)
     # Show plots
     if plot:
         plt.show()

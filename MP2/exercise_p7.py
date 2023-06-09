@@ -36,9 +36,9 @@ def exercise_7a_land_to_water(timestep):
         sim, data = simulation(
             sim_parameters=sim_parameters,  # Simulation parameters, see above
             arena='amphibious',  # Can also be 'land'
-            fast=False,  # For fast mode (not real-time)
+            fast=True,  # For fast mode (not real-time)
             headless=False,  # For headless mode (No GUI, could be faster)
-            record=False,  # Record video
+            record=True,  # Record video
             record_path='ex_7/walk2swim',
             camera_id=1  # camera type: 0=top view, 1=front view, 2=side view,
         )
@@ -78,9 +78,9 @@ def exercise_7b_water_to_land(timestep):
         sim, data = simulation(
             sim_parameters=sim_parameters,  # Simulation parameters, see above
             arena='amphibious',  # Can also be 'land'
-            fast=False,  # For fast mode (not real-time)
+            fast=True,  # For fast mode (not real-time)
             headless=False,  # For headless mode (No GUI, could be faster)
-            record=False,  # Record video
+            record=True,  # Record video
             record_path='ex_7/swim2walk',
             camera_id=1  # camera type: 0=top view, 1=front view, 2=side view,
         )
@@ -95,4 +95,4 @@ def exercise_7b_water_to_land(timestep):
 
 if __name__ == '__main__':
     exercise_7a_land_to_water(timestep=1e-2)
-    # exercise_7b_water_to_land(timestep=1e-2)   
+    exercise_7b_water_to_land(timestep=1e-2)   

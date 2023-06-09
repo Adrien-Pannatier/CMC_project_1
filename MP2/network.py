@@ -46,8 +46,9 @@ def network_ode(time, state, robot_parameters, loads, contact_sens):
     
     sin_diff = np.sin(phases.reshape((n, 1)) - phases.reshape((1, n)) - eq_param[2])
     der_phases = 2*np.pi*eq_param[0] + np.dot(amplitudes, (eq_param[1]* sin_diff))
-    
-    der_phases[16:20] = der_phases[16:20] + feedback_fac * robot_parameters.weight_sensory_feedback * contact_sens[0:4] * np.cos(phases[16:20])
+
+    if contact_sens is not None:
+        der_phases[16:20] = der_phases[16:20] + feedback_fac * robot_parameters.weight_sensory_feedback * contact_sens[0:4] * np.cos(phases[16:20])
     
     der_amplitudes = eq_param[3]*(eq_param[4]-amplitudes)
 

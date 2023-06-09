@@ -51,8 +51,9 @@ class RobotParameters(dict):
         # for part 7
         self.is_touching_ground = False
         self.was_just_touching_ground = False
+        self.spawning = True
 
-        self.set_coupling_weights_and_phase_bias(parameters)
+        
 
         self.set_amplitudes_rate(parameters)
 
@@ -64,6 +65,7 @@ class RobotParameters(dict):
         """Update network from parameters"""
         self.set_frequencies(parameters)  # f_i
         self.set_nominal_amplitudes(parameters)  # R_i
+        self.set_coupling_weights_and_phase_bias(parameters)
 
     def step(self, iteration, salamandra_data):
         """Step function called at each iteration
@@ -84,29 +86,30 @@ class RobotParameters(dict):
         gps = np.array(
             salamandra_data.sensors.links.urdf_positions()[iteration, :9],
         )
-        x_pos = gps[4, 0]
 
-        grf_z = np.array(salamandra_data.sensors.contacts.array[:,:,2])[iteration] # c'est pas juste, ça a une forme de 1000x4
-        self.touching_ground = np.any(grf_z)
-        print(grf_z)
-        print(np.any(grf_z))
 
-        # problème 1 : des fois la salamandre a pas tous les pieds au sol
-        # solution 1 : je regarde qu'elle ait deux itérations de suite les pieds au sol
+        grf_z = np.array(salamandra_data.sensors.contacts.array[:,:,2])[iteration] 
+        self.is_touching_ground = np.any(grf_z)
 
-        # problème 2 : elle spawn en l'air alors elle croit qu'elle est dans l'eau
-
-        if not self.is_touching_ground and not self.was_just_touching_ground and self.state == 'ground':
-            # change the simulation parameters
-            self.update(SimulationParameters(drive = SWIM, downward_body_CPG_phi = SWIM_PHI,))
-            print("swim")
-            self.state = 'water'
-        elif self.is_touching_ground and self.was_just_touching_ground and self.state == 'water':
-            self.update(SimulationParameters(drive = WALK, downward_body_CPG_phi = WALK_BODY_PHI, limb_to_body_CPG_phi = WALK_BODY_LIMB_PHI,))
-            print("walk")
-            self.state = 'ground'
+        if not self.is_touching_ground and not self.was_just_touching_ground:
+            if self.state == 'ground' and not self.spawning:
+                # change the simulation parameters
+                self.update(SimulationParameters(drive = SWIM, downward_body_CPG_phi = SWIM_PHI,))
+                print("swim")
+                self.state = 'water'
+            if self.state == 'water' and self.spawning:
+                self.update(SimulationParameters(drive = SWIM, downward_body_CPG_phi = SWIM_PHI,))
+                self.spawning = False
+        elif self.is_touching_ground and self.was_just_touching_ground:
+            if self.state == 'water':
+                self.update(SimulationParameters(drive = WALK, downward_body_CPG_phi = WALK_BODY_PHI, limb_to_body_CPG_phi = WALK_BODY_LIMB_PHI,))
+                print("walk")
+                self.state = 'ground'
+            if self.state == 'ground' and self.spawning:
+                self.spawning = False
         assert iteration >= 0
 
+        # x_pos = gps[4, 0]
         # if x_pos > 2.7 and self.state == 'ground':
         #     # change the simulation parameters
         #     self.update(SimulationParameters(drive = SWIM, downward_body_CPG_phi = SWIM_PHI,))
@@ -117,7 +120,7 @@ class RobotParameters(dict):
         #     self.state == 'ground'
         # assert iteration >= 0
 
-        self.was_just_touching_ground = self.touching_ground
+        self.was_just_touching_ground = self.is_touching_ground
 
     def get_parameters(self):
         return self.freqs, self.coupling_weights, self.phase_bias, self.rates, self.nominal_amplitudes

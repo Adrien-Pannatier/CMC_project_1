@@ -36,8 +36,7 @@ def exercise_6a_phase_relation(timestep):
             spawn_position=[0, 0, 0.1],  # Robot position in [m]
             spawn_orientation=[0,0,np.pi/2],
             drive=2.9,
-            amplitude_factor = 0
-            # bdhigh = 1 # disables the spine oscillations -> spine rigid
+            amplitude_factor = 0 # disables the spine oscillations -> spine rigid
         )
         
     ]
@@ -99,9 +98,10 @@ def exercise_6b_tegotae_limbs(timestep):
             upward_body_CPG_w = 30,
             contralateral_body_CPG_w = 30,
             limb_to_body_CPG_w = 0,
-            within_limb_CPG_w = 0
+            within_limb_CPG_w = 0,
+            feedback_fac = 0
         )
-
+        # for weight_sensory_feedback in np.linspace(-1, 1, 100)
     ]
     # Grid search
     os.makedirs('./logs/ex_6b/', exist_ok=True)
@@ -110,7 +110,7 @@ def exercise_6b_tegotae_limbs(timestep):
         sim, data = simulation(
             sim_parameters=sim_parameters,  # Simulation parameters, see above
             arena='land',  # Can also be 'land'
-            fast=False,  # For fast mode (not real-time)
+            fast=True,  # For fast mode (not real-time)
             headless=False,  # For headless mode (No GUI, could be faster)
             record=False,  # Record video
             record_path="videos/test_video_drive_" + \
@@ -173,7 +173,6 @@ def exercise_6c_tegotae_spine(timestep):
             camera_id=2  # camera type: 0=top view, 1=front view, 2=side view,
         )
         # Log robot data
-
         data.to_file(filename.format(simulation_i, 'h5'), sim.iteration)
         # Log simulation parameters
         with open(filename.format(simulation_i, 'pickle'), 'wb') as param_file:
@@ -205,14 +204,14 @@ def exercise_6d_open_vs_closed(timestep):
             spawn_orientation=[0,0,np.pi/2],
             drive=2.9,
             amplitude_factor = 1, # enables the spine undulation
-            feed_back_fac = feed_back_fac, # determines open or closed loop
+            feedback_fac = feedback_fac, # determines open or closed loop
             downward_body_CPG_w = 10,
             upward_body_CPG_w = 10,
             contralateral_body_CPG_w = 10,
             limb_to_body_CPG_w = 30,
             within_limb_CPG_w = within_limb_CPG_w
         )
-        for feed_back_fac, within_limb_CPG_w in zip([0, 0, 1, 1], [0, 10, 0, 10])
+        for feedback_fac, within_limb_CPG_w in zip([0, 0, 1, 1], [0, 30, 0, 10])
     ]
     # Grid search
     os.makedirs('./logs/ex_6d/', exist_ok=True)
@@ -240,7 +239,7 @@ def exercise_6d_open_vs_closed(timestep):
 
 if __name__ == '__main__':
     # exercise_6a_phase_relation(timestep=1e-2)
-    # exercise_6b_tegotae_limbs(timestep=1e-2)
+    exercise_6b_tegotae_limbs(timestep=1e-2)
     # exercise_6c_tegotae_spine(timestep=1e-2)
-    exercise_6d_open_vs_closed(timestep=1e-2)
+    # exercise_6d_open_vs_closed(timestep=1e-2)
 
