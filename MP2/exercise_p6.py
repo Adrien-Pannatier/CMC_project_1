@@ -101,7 +101,6 @@ def exercise_6b_tegotae_limbs(timestep):
             within_limb_CPG_w = 0,
             feedback_fac = 0
         )
-        # for weight_sensory_feedback in np.linspace(-1, 1, 100)
     ]
     # Grid search
     os.makedirs('./logs/ex_6b/', exist_ok=True)
