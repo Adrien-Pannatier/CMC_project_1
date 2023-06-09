@@ -47,7 +47,7 @@ def exercise_6a_phase_relation(timestep):
         sim, data = simulation(
             sim_parameters=sim_parameters,  # Simulation parameters, see above
             arena='land',  # Can also be 'land'
-            fast=False,  # For fast mode (not real-time)
+            fast=True,  # For fast mode (not real-time)
             headless=False,  # For headless mode (No GUI, could be faster)
             record=False,  # Record video
             record_path="videos/test_video_drive_" + \
@@ -98,8 +98,7 @@ def exercise_6b_tegotae_limbs(timestep):
             upward_body_CPG_w = 30,
             contralateral_body_CPG_w = 30,
             limb_to_body_CPG_w = 0,
-            within_limb_CPG_w = 0,
-            feedback_fac = 0
+            within_limb_CPG_w = 0
         )
     ]
     # Grid search
@@ -164,7 +163,7 @@ def exercise_6c_tegotae_spine(timestep):
         sim, data = simulation(
             sim_parameters=sim_parameters,  # Simulation parameters, see above
             arena='land',  # Can also be 'land'
-            fast=False,  # For fast mode (not real-time)
+            fast=True,  # For fast mode (not real-time)
             headless=False,  # For headless mode (No GUI, could be faster)
             record=False,  # Record video
             record_path="videos/test_video_drive_" + \
@@ -219,7 +218,7 @@ def exercise_6d_open_vs_closed(timestep):
         sim, data = simulation(
             sim_parameters=sim_parameters,  # Simulation parameters, see above
             arena='land',  # Can also be 'land'
-            fast=False,  # For fast mode (not real-time)
+            fast=True,  # For fast mode (not real-time)
             headless=False,  # For headless mode (No GUI, could be faster)
             record=False,  # Record video
             record_path="videos/test_video_drive_" + \

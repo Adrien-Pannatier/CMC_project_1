@@ -38,7 +38,7 @@ def exercise_7a_land_to_water(timestep):
             arena='amphibious',  # Can also be 'land'
             fast=True,  # For fast mode (not real-time)
             headless=False,  # For headless mode (No GUI, could be faster)
-            record=True,  # Record video
+            record=False,  # Record video
             record_path='ex_7/walk2swim',
             camera_id=1  # camera type: 0=top view, 1=front view, 2=side view,
         )
@@ -80,7 +80,7 @@ def exercise_7b_water_to_land(timestep):
             arena='amphibious',  # Can also be 'land'
             fast=True,  # For fast mode (not real-time)
             headless=False,  # For headless mode (No GUI, could be faster)
-            record=True,  # Record video
+            record=False,  # Record video
             record_path='ex_7/swim2walk',
             camera_id=1  # camera type: 0=top view, 1=front view, 2=side view,
         )

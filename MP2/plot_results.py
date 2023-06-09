@@ -482,26 +482,6 @@ def plot_ex_6b(num_it):
     plot_trajectory(head_positions)
     plt.legend()
     
-    # ground_forces = np.asarray(data.sensors.contacts.reactions()) # array of type [times, 4(limbs), 3(xyz)]
-    # high_threshold_grf = 18
-    # low_threshold_grf = 5
-    # ground_forces_i = low_threshold_grf < ground_forces
-    # ground_forces_i =  ground_forces > high_threshold_grf
-    # ground_forces[ground_forces_i] = 0
-    # n = 10  # the larger n is, the smoother curve will be
-    # b = [1.0 / n] * n
-    # a = 1
-    
-    # times = np.arange(0, 10, 1e-2)
-
-    # plt.figure('Visualisation_of_grf_implementation_pm')
-    # for i in range(4):
-    #     plt.plot(times, limb_phases[:, i], label=f"limb {i}")
-    #     plt.legend()
-    #     plt.xlim([0, 2])
-    #     plt.xlabel('Time [s]')
-    #     plt.ylabel('Limb phase [rad]')
-    #     plt.grid(True)
 
 def plot_ex_6b_2(num_it):
     # to see the effect of the weight of the sensory feedback and justify its choice
@@ -571,11 +551,11 @@ def main(plot=True):
     # plot_ex_5b(1)
     # plot_ex_5c(2)
     # plot_ex_5d(1)
-    # plot_ex_6a(1)
+    plot_ex_6a(1)
     plot_ex_6b(1)
-    # plot_ex_6b_2(100)
-    # plot_ex_6c(3)
-    # plot_ex_6d(4)
+    # plot_ex_6b_2(1)
+    plot_ex_6c(3)
+    plot_ex_6d(4)
     # Show plots
     if plot:
         plt.show()

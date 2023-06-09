@@ -95,7 +95,6 @@ class RobotParameters(dict):
             if self.state == 'ground' and not self.spawning:
                 # change the simulation parameters
                 self.update(SimulationParameters(drive = SWIM, downward_body_CPG_phi = SWIM_PHI,))
-                print("swim")
                 self.state = 'water'
             if self.state == 'water' and self.spawning:
                 self.update(SimulationParameters(drive = SWIM, downward_body_CPG_phi = SWIM_PHI,))
@@ -103,7 +102,6 @@ class RobotParameters(dict):
         elif self.is_touching_ground and self.was_just_touching_ground:
             if self.state == 'water':
                 self.update(SimulationParameters(drive = WALK, downward_body_CPG_phi = WALK_BODY_PHI, limb_to_body_CPG_phi = WALK_BODY_LIMB_PHI,))
-                print("walk")
                 self.state = 'ground'
             if self.state == 'ground' and self.spawning:
                 self.spawning = False
