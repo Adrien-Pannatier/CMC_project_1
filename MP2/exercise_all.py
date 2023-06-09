@@ -21,6 +21,16 @@ from exercise_p5 import (
     exercise_5c_walk_turn,
     exercise_5d_walk_back,
 )
+from exercise_p6 import (
+    exercise_6a_phase_relation,
+    exercise_6b_tegotae_limbs,
+    exercise_6c_tegotae_spine,
+    exercise_6d_open_vs_closed,
+)
+from exercise_p7 import (
+    exercise_7a_land_to_water,
+    exercise_7b_water_to_land,
+)
 
 
 def exercise_all(arguments):
@@ -57,12 +67,25 @@ def exercise_all(arguments):
         exercise_5c_walk_turn(timestep)
     if '5d' in arguments:
         exercise_5d_walk_back(timestep)
+    if '6a' in arguments:
+        exercise_6a_phase_relation(timestep)
+    if '6b' in arguments:
+        exercise_6b_tegotae_limbs(timestep)
+    if '6c' in arguments:
+        exercise_6c_tegotae_spine(timestep)
+    if '6d' in arguments:
+        exercise_6d_open_vs_closed(timestep)
+    if '7a' in arguments:
+        exercise_7a_land_to_water(timestep)
+    if '7b' in arguments:
+        exercise_7b_water_to_land(timestep)
 
     if not verbose:
         pylog.set_level('debug')
 
 
 if __name__ == '__main__':
-    exercises = ['1a', '2a', '2b', '3a', '3b', '4a', '4b', '5a', '5b', '5c', '5d']
+    # exercises = ['1a', '2a', '2b', '3a', '3b', '4a', '4b', '5a', '5b', '5c', '5d', '6a', '6b', '6c', '6d', '7a', '7b']
+    exercises = ['6a', '6b', '6c', '6d', '7a', '7b']
     exercise_all(arguments=exercises)
 

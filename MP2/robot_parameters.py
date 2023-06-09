@@ -109,6 +109,7 @@ class RobotParameters(dict):
                 self.spawning = False
         assert iteration >= 0
 
+        # UNCOMMENT AND COMMENT ABOVE TO RUN EXERCISE 4
         # x_pos = gps[4, 0]
         # if x_pos > 2.7 and self.state == 'ground':
         #     # change the simulation parameters

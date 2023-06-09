@@ -13,7 +13,7 @@ def main(run_simulations=True, parallel=True, verbose=True):
 
     pylog.info('Running simulation exercises')
     arguments = (
-        ['6a', '6b', '6c', '6d']
+        ['6a', '6b', '6c', '6d', '7a', '7b']
         if run_simulations
         else []
     )

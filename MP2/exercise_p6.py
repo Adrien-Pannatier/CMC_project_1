@@ -238,8 +238,8 @@ def exercise_6d_open_vs_closed(timestep):
 
 
 if __name__ == '__main__':
-    # exercise_6a_phase_relation(timestep=1e-2)
+    exercise_6a_phase_relation(timestep=1e-2)
     exercise_6b_tegotae_limbs(timestep=1e-2)
-    # exercise_6c_tegotae_spine(timestep=1e-2)
-    # exercise_6d_open_vs_closed(timestep=1e-2)
+    exercise_6c_tegotae_spine(timestep=1e-2)
+    exercise_6d_open_vs_closed(timestep=1e-2)
 
